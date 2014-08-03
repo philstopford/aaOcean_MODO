@@ -1,0 +1,27 @@
+Building aaOcean on OS X
+
+aaOcean uses OpenMP, which isn't available in the clang compiler on OS X. It is available in GCC, but Apple replaced gcc with symbolic links back to clang with XCode 5. Ugh.
+
+So, there's a bit of work to do. The script in openmp_information will do much of the leg work. Note that if you re-run the script, it re-collects all the source and overwrites modifications, so you need to re-comment out the lines noted and also do the below :
+
+Refer to openmp_information/OpenMP_Mavericks.html and note this (from http://stackoverflow.com/questions/20321988/error-enabling-openmp-ld-library-not-found-for-lgomp-and-clang-errors/21789869#):
+	
+
+gcc -dynamiclib -headerpad_max_install_names -install_name libiomp5.dylib -no-intel-extensions -    single_module -current_version 5.0 -compatibility_version 5.0  -o unstripped/libiomp5.dylib $(cat     unstripped/libiomp5.dylib.lst)  
+clang: error: unknown argument: '-no-intel-extensions' [-Wunused-command-line-argument-hard-    error-in-future]
+clang: note: this will be a hard error (cannot be downgraded to a warning) in the future
+
+
+make[1] ** [unstripped/libiomp5.dylib] Error 1
+------------------------------------------------------------------------------
+Finished  : 2014-07-09 07:59:49 UTC
+Elapsed   : 00:00:00
+Result    : --- Failure ---
+-------------------------------------------------------------------------------
+
+Assuming it was a deprecated argument (I am very new to clang, llvm and similar terms), I commented it (-no-intel-extensions) on the lines 414, 433, 1121 of src/makefile.mk file, relaunched "make" and compilation could continue.
+
+Finally, since my OS Version (Maveriks) expects the .bash_profile name instead of .profile, which is the one created by the script, I manually loaded .profile (through > source .profile) and PATH and the INCLUDE folders were properly updated.
+
+
+

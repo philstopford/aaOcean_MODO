@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>E114F4BC-24D3-4F45-912E-733F55E8BE0A</string>
+	<key>IDESourceControlProjectName</key>
+	<string>HOTMODO</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>324CBA6B-9656-4DD3-B3DB-675981A33929</key>
+		<string>https://github.com/philstopford/HOT_MODO.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>HOTMODO.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>324CBA6B-9656-4DD3-B3DB-675981A33929</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/philstopford/HOT_MODO.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>324CBA6B-9656-4DD3-B3DB-675981A33929</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>324CBA6B-9656-4DD3-B3DB-675981A33929</string>
+			<key>IDESourceControlWCCName</key>
+			<string>HOT_MODO</string>
+		</dict>
+	</array>
+</dict>
+</plist>
