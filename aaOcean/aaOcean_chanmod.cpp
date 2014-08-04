@@ -11,9 +11,8 @@ using namespace aaOceanChanModNameSpace;
 
 aaOceanChanMod::aaOceanChanMod ()
 {
-    // WORKING - DISABLED FOR EXPERIMENT.
-    // m_ocean = NULL;
-    m_ocean = new aaOcean();
+    m_ocean = NULL;
+    // m_ocean = new aaOcean();
 }
 
 aaOceanChanMod::~aaOceanChanMod ()
@@ -425,6 +424,11 @@ aaOceanChanMod::cmod_Evaluate (
     CLxUser_Attributes	 at (attr);
     OceanData		*od = new OceanData;
 
+    if (m_ocean == NULL)
+    {
+        m_ocean = new aaOcean();
+    }
+    
     // Variables used to handle returned values from chanMod.ReadInput* methods.
     double dTemp; // used for 'ReadFloat' where modo's SDK returns a double.
     int iTemp;

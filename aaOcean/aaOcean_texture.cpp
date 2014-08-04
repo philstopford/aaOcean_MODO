@@ -17,8 +17,8 @@ LXtTagInfoDesc	 aaOceanTexture::descInfo[] = {
 aaOceanTexture::aaOceanTexture ()
 {
     my_type = LXiTYPE_NONE;
-    m_ocean = new aaOcean();
-	// m_ocean = NULL;
+    // m_ocean = new aaOcean();
+	m_ocean = NULL;
 }
 
 aaOceanTexture::~aaOceanTexture ()
@@ -163,6 +163,9 @@ LxResult aaOceanTexture::vtx_ReadChannels(ILxUnknownID attr, void  **ppvData)
 {
 	CLxUser_Attributes	 at (attr);
 	RendData		*rd = new RendData;
+
+    if (m_ocean == NULL)
+        m_ocean = new aaOcean();
 
     rd->m_outputType = at.Int(m_idx_outputType);
 	if(rd->m_outputType > 3)
