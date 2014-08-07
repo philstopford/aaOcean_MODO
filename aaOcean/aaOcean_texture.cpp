@@ -12,18 +12,19 @@ LXtTagInfoDesc	 aaOceanTexture::descInfo[] = {
 #define SRVs_TEXTURE		"aaOcean.texture"
 #define SRVs_ITEMTYPE		SRVs_TEXTURE
 // OS X defines this. MSVC doesn't.
+#ifndef M_PI
 #define M_PI        3.14159265358979323846264338327950288   /* pi             */
+#endif
 
 aaOceanTexture::aaOceanTexture ()
 {
     my_type = LXiTYPE_NONE;
-    // m_ocean = new aaOcean();
-	m_ocean = NULL;
+	// m_ocean = NULL;
 }
 
 aaOceanTexture::~aaOceanTexture ()
 {
-	if(m_ocean != NULL) delete m_ocean;
+	// if(m_ocean != NULL) delete m_ocean;
 }
 
 LXtItemType aaOceanTexture::MyType ()
@@ -164,8 +165,8 @@ LxResult aaOceanTexture::vtx_ReadChannels(ILxUnknownID attr, void  **ppvData)
 	CLxUser_Attributes	 at (attr);
 	RendData		*rd = new RendData;
 
-    if (m_ocean == NULL)
-        m_ocean = new aaOcean();
+    if (rd->m_ocean == NULL)
+        rd->m_ocean = new aaOcean();
 
     rd->m_outputType = at.Int(m_idx_outputType);
 	if(rd->m_outputType > 3)
@@ -215,7 +216,7 @@ LxResult aaOceanTexture::vtx_ReadChannels(ILxUnknownID attr, void  **ppvData)
 	
 	
     // We scale the height because aaOcean scales it down again internally.
-    m_ocean->input(	rd->m_resolution, (unsigned long)rd->m_seed, rd->m_oceanSize,rd->m_oceanDepth, rd->m_surfaceTension, rd->m_waveSize, rd->m_waveSmooth,
+    rd->m_ocean->input(	rd->m_resolution, (unsigned long)rd->m_seed, rd->m_oceanSize,rd->m_oceanDepth, rd->m_surfaceTension, rd->m_waveSize, rd->m_waveSmooth,
                     rd->m_waveDirection, rd->m_waveAlign, rd->m_waveReflection, rd->m_waveSpeed, rd->m_waveHeight * 100, rd->m_waveChop, rd->m_time, rd->m_repeatTime,
                     rd->m_doFoam, rd->m_doNormals);
     
@@ -298,10 +299,9 @@ void aaOceanTexture::vtx_Evaluate (ILxUnknownID etor, int *idx, ILxUnknownID vec
     float value = 0.0; // value output
     float alpha = 1.0; // alpha output
 
-	if(m_ocean != NULL)
-	{
-
-		tOut->direct   = 1;
+	if(rd->m_ocean != NULL)
+    {
+        tOut->direct   = 1;
         // The intent of tInpDsp->enable isn't entirely clear. The docs, such as they are, indicate that the texture should set this when outputting displacement.
         tInpDsp->enable = true;
 
@@ -310,11 +310,11 @@ void aaOceanTexture::vtx_Evaluate (ILxUnknownID etor, int *idx, ILxUnknownID vec
         
         if(rd->m_outputType == 0) // normal displacement texture configuration
         {
-            result[1] = m_ocean->getOceanData(tInp->uvw[0]/rd->m_oceanSize, tInp->uvw[2]/rd->m_oceanSize, aaOcean::eHEIGHTFIELD);
-            if (m_ocean->isChoppy())
+            result[1] = rd->m_ocean->getOceanData(tInp->uvw[0]/rd->m_oceanSize, tInp->uvw[2]/rd->m_oceanSize, aaOcean::eHEIGHTFIELD);
+            if (rd->m_ocean->isChoppy())
             {
-                result[0] = m_ocean->getOceanData(tInp->uvw[0]/rd->m_oceanSize, tInp->uvw[2]/rd->m_oceanSize, aaOcean::eCHOPX);
-                result[2] = m_ocean->getOceanData(tInp->uvw[0]/rd->m_oceanSize, tInp->uvw[2]/rd->m_oceanSize, aaOcean::eCHOPZ);
+                result[0] = rd->m_ocean->getOceanData(tInp->uvw[0]/rd->m_oceanSize, tInp->uvw[2]/rd->m_oceanSize, aaOcean::eCHOPX);
+                result[2] = rd->m_ocean->getOceanData(tInp->uvw[0]/rd->m_oceanSize, tInp->uvw[2]/rd->m_oceanSize, aaOcean::eCHOPZ);
             } else {
                 result[0] = 0.0;
                 result[2] = 0.0;
@@ -331,38 +331,37 @@ void aaOceanTexture::vtx_Evaluate (ILxUnknownID etor, int *idx, ILxUnknownID vec
         {
             if(rd->m_doFoam == true)
             {
-                value = m_ocean->getOceanData(tInp->uvw[0]/rd->m_oceanSize, tInp->uvw[2]/rd->m_oceanSize, aaOcean::eFOAM);
+                value = rd->m_ocean->getOceanData(tInp->uvw[0]/rd->m_oceanSize, tInp->uvw[2]/rd->m_oceanSize, aaOcean::eFOAM);
             }
         }
         if(rd->m_outputType == 2) // Eigenvalues - minus
         {
             if(rd->m_doFoam == true)
             {
-                result[0] = m_ocean->getOceanData(tInp->uvw[0]/rd->m_oceanSize, tInp->uvw[2]/rd->m_oceanSize, aaOcean::eEIGENMINUSX);
-                result[2] = m_ocean->getOceanData(tInp->uvw[0]/rd->m_oceanSize, tInp->uvw[2]/rd->m_oceanSize, aaOcean::eEIGENMINUSZ);
+                result[0] = rd->m_ocean->getOceanData(tInp->uvw[0]/rd->m_oceanSize, tInp->uvw[2]/rd->m_oceanSize, aaOcean::eEIGENMINUSX);
+                result[2] = rd->m_ocean->getOceanData(tInp->uvw[0]/rd->m_oceanSize, tInp->uvw[2]/rd->m_oceanSize, aaOcean::eEIGENMINUSZ);
             }
         }
         if(rd->m_outputType == 3) // Eigenvalues - plus
         {
             if(rd->m_doFoam == true)
             {
-                result[0] = m_ocean->getOceanData(tInp->uvw[0]/rd->m_oceanSize, tInp->uvw[2]/rd->m_oceanSize, aaOcean::eEIGENPLUSX);
-                result[2] = m_ocean->getOceanData(tInp->uvw[0]/rd->m_oceanSize, tInp->uvw[2]/rd->m_oceanSize, aaOcean::eEIGENPLUSZ);
+                result[0] = rd->m_ocean->getOceanData(tInp->uvw[0]/rd->m_oceanSize, tInp->uvw[2]/rd->m_oceanSize, aaOcean::eEIGENPLUSX);
+                result[2] = rd->m_ocean->getOceanData(tInp->uvw[0]/rd->m_oceanSize, tInp->uvw[2]/rd->m_oceanSize, aaOcean::eEIGENPLUSZ);
             }
         }
-
         // Note that modo expects textures to output the right kind of data based on the context. This is the reason for checking against
         // LXi_TFX_COLOR in the context below. If we aren't driving a color, we output a value instead.
-        if (LXi_TFX_COLOR == tInp->context)
-        {
-            tOut->color[0][0] = result[0];
-            tOut->color[0][1] = result[1];
-            tOut->color[0][2] = result[2];
-        }
-        tOut->value[0] = value;
-        tOut->alpha[0] = alpha;
-
 	}
+    if (LXi_TFX_COLOR == tInp->context)
+    {
+        tOut->color[0][0] = result[0];
+        tOut->color[0][1] = result[1];
+        tOut->color[0][2] = result[2];
+    }
+    tOut->value[0] = value;
+    tOut->alpha[0] = alpha;
+
 }
 
 /*
@@ -372,8 +371,6 @@ void aaOceanTexture::vtx_Cleanup (void	*data)
 {
 	RendData		*rd = (RendData *) data;
 
-	//if(rd->m_context != NULL) delete rd->m_context;
-	//if(rd->m_ocean != NULL) delete rd->m_ocean;
 	if(rd != NULL) delete rd;
 
 }

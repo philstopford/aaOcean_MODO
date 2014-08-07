@@ -69,8 +69,6 @@ class aaOceanTexture : public CLxImpl_ValueTexture
         unsigned m_idx_doNormals;
 		unsigned m_idx_time;
 
-		aaOcean        *m_ocean;
-
         int m_outputTypeCache;
         int		m_resolutionCache;
         float m_oceanSizeCache;
@@ -94,6 +92,7 @@ class aaOceanTexture : public CLxImpl_ValueTexture
 			
             public:
 
+                aaOcean *m_ocean = NULL;
                 int m_outputType; // default is 0
                 int		m_resolution; // default is 2
                 float m_oceanSize; // default is 100.0

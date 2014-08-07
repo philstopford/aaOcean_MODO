@@ -3,14 +3,12 @@
 #include <lx_plugin.hpp>
 
 #include <string>
-// #include <mutex>
 
 using namespace aaOceanChanModNameSpace;
 
-// std::mutex myMutex; // global variable
-
 aaOceanChanMod::aaOceanChanMod ()
 {
+    // WORKING - DISABLED FOR EXPERIMENT.
     m_ocean = NULL;
     // m_ocean = new aaOcean();
 }
@@ -418,7 +416,6 @@ aaOceanChanMod::cmod_Evaluate (
         ILxUnknownID		 attr,		// ILxAttributesID
         void			*data)		
 {
-    // myMutex.lock(); // temporary. Something is blowing up and I don't know what.
     CLxLoc_ChannelModifier	 chanMod (cmod);
 
     CLxUser_Attributes	 at (attr);
@@ -512,10 +509,11 @@ aaOceanChanMod::cmod_Evaluate (
                     od->m_waveAlign, od->m_waveReflection, od->m_waveSpeed, od->m_waveHeight * 100,
                     od->m_waveChop, od->m_time, od->m_repeatTime,
                     od->m_doFoam, od->m_doNormals);
- 
-    double result[3], normals[3], chop[3];
-    double foam, Eigenminus[3], Eigenplus[3];
 
+    double result[3], normals[3];
+    double foam, Eigenminus[3], Eigenplus[3];
+    
+    result[0] = result[1] = result[2] = 0.0;
     foam = 0.0;
     Eigenminus[0] = Eigenminus[1] = Eigenminus[2] = 0.0;
     Eigenplus[0] = Eigenplus[1] = Eigenplus[2] = 0.0;
@@ -546,7 +544,6 @@ aaOceanChanMod::cmod_Evaluate (
         normals[1] = m_ocean->getOceanData(od->m_x/od->m_oceanSize, od->m_z/od->m_oceanSize, aaOcean::eNORMALSY);
         normals[2] = m_ocean->getOceanData(od->m_x/od->m_oceanSize, od->m_z/od->m_oceanSize, aaOcean::eNORMALSZ);
     }
-    
     chanMod.WriteOutputFloat (attr, cm_idx_displacementX, result[0]); // vector, normalize to 0-1, 0.5 is no displacement
     chanMod.WriteOutputFloat (attr, cm_idx_displacementY, result[1]); // vector, normalize to 0-1, 0.5 is no displacement
     chanMod.WriteOutputFloat (attr, cm_idx_displacementZ, result[2]); // vector, normalize to 0-1, 0.5 is no displacement
@@ -562,8 +559,6 @@ aaOceanChanMod::cmod_Evaluate (
     chanMod.WriteOutputFloat (attr, cm_idx_eigenplusX, Eigenplus[0]); // vector
     chanMod.WriteOutputFloat (attr, cm_idx_eigenplusY, Eigenplus[1]); // vector
     chanMod.WriteOutputFloat (attr, cm_idx_eigenplusZ, Eigenplus[2]); // vector
-    // myMutex.unlock();
-
     return LXe_OK;
 }
 
@@ -598,7 +593,7 @@ aaOceanChanModPackage::pkg_SetupChannels (
         ILxUnknownID		 addChan)
 {
         CLxUser_AddChannel	 ac (addChan);
-        LXtVector            displacement, normals, chop, eigenplus, eigenminus;
+        LXtVector            displacement, normals, eigenplus, eigenminus;
 
         // Order here is not so important since we look up by name and set indices later. Yay for freedom!
 
