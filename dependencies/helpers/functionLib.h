@@ -2,6 +2,9 @@
 #define FUNCTION_LIB_H
 
 #include <assert.h>
+#ifdef _MSC_VER
+#include <malloc.h>
+#endif
 
 inline float DegsToRads(float degrees)	// Degrees to radians conversion...
 { 
@@ -60,10 +63,12 @@ inline long int_sqrt(long r) // paul bourke
    return(c);
 }
 
+#ifndef _MSC_VER
 inline int round(float x)
 {
    return  (int)(x > 0.0f ? x + 0.5f : x - 0.5f);
 }
+#endif
 
 inline bool isInt(float a)
 {
@@ -146,7 +151,9 @@ void aligned_free(void* aligned)
 	void* raw = *(void**)((char*)aligned-sizeof(void*));
 	free(raw);
 #else
-	aligned_free(aligned);
+#ifdef _MSC_VER
+	free(aligned);
+#endif
 #endif
 
 }
