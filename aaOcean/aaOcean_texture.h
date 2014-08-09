@@ -45,6 +45,8 @@ class aaOceanTexture : public CLxImpl_ValueTexture
 #endif
         void			vtx_Cleanup       (void *data) LXx_OVERRIDE;
 
+        aaOcean *m_ocean;
+
 		LXtItemType		MyType ();
         CLxUser_PacketService	pkt_service;
         unsigned		tin_offset,tinDsp_offset;
@@ -92,7 +94,6 @@ class aaOceanTexture : public CLxImpl_ValueTexture
 			
             public:
 
-                aaOcean *m_ocean = NULL;
                 int m_outputType; // default is 0
                 int		m_resolution; // default is 2
                 float m_oceanSize; // default is 100.0

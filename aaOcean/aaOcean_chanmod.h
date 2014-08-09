@@ -40,7 +40,7 @@ class aaOceanChanMod
         aaOceanChanMod ();
         ~aaOceanChanMod ();
 
-        aaOcean        *m_ocean;
+        aaOcean *m_ocean;
 
         LxResult		 pins_Initialize (ILxUnknownID item, ILxUnknownID super) LXx_OVERRIDE;
         void			 pins_Cleanup (void) LXx_OVERRIDE;
@@ -138,7 +138,7 @@ class aaOceanChanMod
         class OceanData {
             
             public:
-
+            
                 float m_x;
                 float m_z;
                 int		m_resolution; // default is 2

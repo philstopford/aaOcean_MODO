@@ -8,14 +8,12 @@ using namespace aaOceanChanModNameSpace;
 
 aaOceanChanMod::aaOceanChanMod ()
 {
-    // WORKING - DISABLED FOR EXPERIMENT.
     m_ocean = NULL;
-    // m_ocean = new aaOcean();
 }
 
 aaOceanChanMod::~aaOceanChanMod ()
 {
-    if(m_ocean != NULL)
+    if (m_ocean != NULL)
     {
         delete m_ocean;
     }
@@ -250,7 +248,12 @@ aaOceanChanMod::cmod_Allocate (
 aaOceanChanMod::cmod_Cleanup (
         void			*data)
 {
-
+	OceanData		*od = (OceanData *) data;
+    
+	if(od != NULL)
+    {
+        delete od;
+    }
 }
 
 // Flags defines schematic rules for the channels. This applies when the modifier is added to the schematic.
@@ -420,11 +423,8 @@ aaOceanChanMod::cmod_Evaluate (
 
     CLxUser_Attributes	 at (attr);
     OceanData		*od = new OceanData;
-
-    if (m_ocean == NULL)
-    {
+    if(m_ocean == NULL)
         m_ocean = new aaOcean();
-    }
     
     // Variables used to handle returned values from chanMod.ReadInput* methods.
     double dTemp; // used for 'ReadFloat' where modo's SDK returns a double.
