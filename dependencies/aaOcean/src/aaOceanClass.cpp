@@ -34,6 +34,9 @@
 #include "agnerFog/stoc1.cpp"
 #include "agnerFog/userintf.cpp"
 #include "aaOceanClass.h"
+#include <mutex>
+
+std::mutex myMutex;
 
 // removed because of gcc-4 dependency
 // #include "vectorSSE.h"
@@ -140,7 +143,11 @@ void aaOcean::input(int resolution, ULONG seed, float oceanScale, float oceanDep
 					float waveHeight, float chopAmount, float time, float loopTime, bool doFoam, bool doNormals)
 {
 	// forcing to be power of two, setting minimum resolution of 2^4
-	resolution	= (int)pow(2.0f, (4 + abs(resolution))); 
+    if (resolution < 0)
+        resolution = 0;
+    if (resolution > 12)
+        resolution = 12;
+	resolution	= (int)pow(2.0f, abs(resolution));
 	reInit(resolution);
 
 	// scaled for better UI control
@@ -370,6 +377,7 @@ void aaOcean::clearResidualArrays()
 
 void aaOcean::clearArrays()
 {
+    bool useDestroy = true; // added to control fftw destroy_plan behavior in this routine.
 	if(m_isAllocated)
 	{
 		if(m_isNormalAllocated)
@@ -383,19 +391,22 @@ void aaOcean::clearArrays()
 		{
 			if(m_fft_jxx)
 			{
-				fftwf_destroy_plan(m_planJxx);
+                if (useDestroy)
+                    fftwf_destroy_plan(m_planJxx);
 				fftwf_free(m_fft_jxx); 
 				m_fft_jxx = FALSE;
 			}
 			if(m_fft_jzz)
 			{
-				fftwf_destroy_plan(m_planJzz);
+                if (useDestroy)
+                    fftwf_destroy_plan(m_planJzz);
 				fftwf_free(m_fft_jzz);  
 				m_fft_jzz = FALSE;
 			}
 			if(m_fft_jxz)
 			{
-				fftwf_destroy_plan(m_planJxz);
+                if (useDestroy)
+                    fftwf_destroy_plan(m_planJxz);
 				fftwf_free(m_fft_jxz); 
 				m_fft_jxz = FALSE;
 			}
@@ -403,19 +414,22 @@ void aaOcean::clearArrays()
 		}
 		if(m_fft_chopZ)
 		{
-			fftwf_destroy_plan(m_planChopZ);
+            if (useDestroy)
+                fftwf_destroy_plan(m_planChopZ);
 			fftwf_free(m_fft_chopZ); 
 			m_fft_chopZ = FALSE;
 		}
 		if(m_fft_chopX)
 		{
-			fftwf_destroy_plan(m_planChopX);
+            if (useDestroy)
+                fftwf_destroy_plan(m_planChopX);
 			fftwf_free(m_fft_chopX); 
 			m_fft_chopX = FALSE;
 		}
 		if(m_fft_htField)
 		{
-			fftwf_destroy_plan(m_planHeightField);
+            if (useDestroy)
+                fftwf_destroy_plan(m_planHeightField);
 			fftwf_free(m_fft_htField); 
 			m_fft_htField = FALSE;
 		}
@@ -842,7 +856,7 @@ void aaOcean::getOceanArray(float *&outArray, aaOcean::arrayType type)
 	}
 }
 
-void aaOcean::doEverything(float uCoord, float vCoord, double result[3], double normals[3], double &foam, double Eigenminus[3], double Eigenplus[3])
+void aaOcean::doEverything(float uCoord, float vCoord, double result[3], double misc[2], double Eigenminus[3], double Eigenplus[3])
 {
     Eigenplus[1] = Eigenminus[1] = 0.0;
     result[1] = getOceanData(uCoord, vCoord, aaOcean::eHEIGHTFIELD);
@@ -854,15 +868,13 @@ void aaOcean::doEverything(float uCoord, float vCoord, double result[3], double 
         Eigenminus[2] = getOceanData(uCoord, vCoord, aaOcean::eEIGENMINUSZ);
         Eigenplus[0] = getOceanData(uCoord, vCoord, aaOcean::eEIGENPLUSX);
         Eigenplus[2] = getOceanData(uCoord, vCoord, aaOcean::eEIGENPLUSZ);
-        foam = getOceanData(uCoord, vCoord, aaOcean::eFOAM);
+        misc[0] = getOceanData(uCoord, vCoord, aaOcean::eFOAM);
     } else {
         Eigenminus[0] = Eigenminus[2] = Eigenplus[0] = Eigenplus[2] = 0.0;
         result[0] = 0.0;
         result[2] = 0.0;
-        foam = 0.0;
+        misc[0] = 0.0;
     }
-    normals[0] = normals[1] = normals[2] = 0.0;
-    
 }
 
 float aaOcean::getOceanData(float uCoord, float vCoord, aaOcean::arrayType type) const
