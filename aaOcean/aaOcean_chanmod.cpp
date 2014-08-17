@@ -443,9 +443,9 @@ aaOceanChanMod::cmod_Evaluate (
     {
         od->m_resolution = 12;
     }
-	if(od->m_resolution < 1)
+	if(od->m_resolution < 4)
     {
-        od->m_resolution = 1;
+        od->m_resolution = 4;
     }
 
     chanMod.ReadInputInt (attr, cm_idx_oceanSize, &iTemp);
@@ -504,11 +504,22 @@ aaOceanChanMod::cmod_Evaluate (
     // m_ocean = new aaOcean();
     
     // We scale the height because aaOcean scales it down again internally.
-    m_ocean->input(	od->m_resolution, (unsigned long)od->m_seed, od->m_oceanSize, od->m_oceanDepth,
-                    od->m_surfaceTension, od->m_waveSize, od->m_waveSmooth, od->m_waveDirection,
-                    od->m_waveAlign, od->m_waveReflection, od->m_waveSpeed, od->m_waveHeight * 100,
-                    od->m_waveChop, od->m_time, od->m_repeatTime,
-                    od->m_doFoam, od->m_doNormals);
+    m_ocean->input(	od->m_resolution,
+                    (unsigned long)od->m_seed,
+                    od->m_oceanSize, od->m_oceanDepth,
+                    od->m_surfaceTension,
+                    od->m_waveSize,
+                    od->m_waveSmooth,
+                    od->m_waveDirection,
+                    od->m_waveAlign,
+                    od->m_waveReflection,
+                    od->m_waveSpeed,
+                    od->m_waveHeight * 100,
+                    od->m_waveChop,
+                    od->m_time,
+                    od->m_repeatTime,
+                    od->m_doFoam,
+                    od->m_doNormals);
 
     double result[3], normals[3];
     double foam, Eigenminus[3], Eigenplus[3];
@@ -518,18 +529,18 @@ aaOceanChanMod::cmod_Evaluate (
     Eigenminus[0] = Eigenminus[1] = Eigenminus[2] = 0.0;
     Eigenplus[0] = Eigenplus[1] = Eigenplus[2] = 0.0;
 
-    result[1] = m_ocean->getOceanData(od->m_x/od->m_oceanSize, od->m_z/od->m_oceanSize, aaOcean::eHEIGHTFIELD);
+    result[1] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eHEIGHTFIELD);
     if (m_ocean->isChoppy())
     {
-        result[0] = m_ocean->getOceanData(od->m_x/od->m_oceanSize, od->m_z/od->m_oceanSize, aaOcean::eCHOPX);
-        result[2] = m_ocean->getOceanData(od->m_x/od->m_oceanSize, od->m_z/od->m_oceanSize, aaOcean::eCHOPZ);
+        result[0] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eCHOPX);
+        result[2] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eCHOPZ);
         if(od->m_doFoam)
         {
-            foam = m_ocean->getOceanData(od->m_x/od->m_oceanSize, od->m_z/od->m_oceanSize, aaOcean::eFOAM);
-            Eigenminus[0] = m_ocean->getOceanData(od->m_x/od->m_oceanSize, od->m_z/od->m_oceanSize, aaOcean::eEIGENMINUSX);
-            Eigenminus[2] = m_ocean->getOceanData(od->m_x/od->m_oceanSize, od->m_z/od->m_oceanSize, aaOcean::eEIGENMINUSZ);
-            Eigenplus[0] = m_ocean->getOceanData(od->m_x/od->m_oceanSize, od->m_z/od->m_oceanSize, aaOcean::eEIGENPLUSX);
-            Eigenplus[2] = m_ocean->getOceanData(od->m_x/od->m_oceanSize, od->m_z/od->m_oceanSize, aaOcean::eEIGENPLUSZ);
+            foam = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eFOAM);
+            Eigenminus[0] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eEIGENMINUSX);
+            Eigenminus[2] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eEIGENMINUSZ);
+            Eigenplus[0] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eEIGENPLUSX);
+            Eigenplus[2] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eEIGENPLUSZ);
         }
     } else {
         result[0] = 0.0;
@@ -540,9 +551,9 @@ aaOceanChanMod::cmod_Evaluate (
     {
         normals[0] = normals[1] = normals[2] = 0.0;
     } else {
-        normals[0] = m_ocean->getOceanData(od->m_x/od->m_oceanSize, od->m_z/od->m_oceanSize, aaOcean::eNORMALSX);
-        normals[1] = m_ocean->getOceanData(od->m_x/od->m_oceanSize, od->m_z/od->m_oceanSize, aaOcean::eNORMALSY);
-        normals[2] = m_ocean->getOceanData(od->m_x/od->m_oceanSize, od->m_z/od->m_oceanSize, aaOcean::eNORMALSZ);
+        normals[0] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eNORMALSX);
+        normals[1] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eNORMALSY);
+        normals[2] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eNORMALSZ);
     }
     chanMod.WriteOutputFloat (attr, cm_idx_displacementX, result[0]); // vector, normalize to 0-1, 0.5 is no displacement
     chanMod.WriteOutputFloat (attr, cm_idx_displacementY, result[1]); // vector, normalize to 0-1, 0.5 is no displacement
@@ -582,7 +593,7 @@ aaOceanChanModPackage::aaOceanChanModPackage ()
 // & is for int
 // % is for float
 static LXtTextValueHint hint_resolution[] = {
-    1,			"&min",		// int min 1
+    4,			"&min",		// int min 4
     12,			"&max",		// int max 12
     -1,			NULL
 };
@@ -606,14 +617,14 @@ aaOceanChanModPackage::pkg_SetupChannels (
         ac.SetDefault (0.0, 0);
     
         ac.NewChannel  ("resolution",	LXsTYPE_INTEGER);
-        ac.SetDefault  (0.0, 2);
+        ac.SetDefault  (0.0, 4);
         ac.SetHint(hint_resolution);
         
         ac.NewChannel  ("oceanSize",			LXsTYPE_FLOAT);
         ac.SetDefault  (100.0f, 0);
         
         ac.NewChannel  ("waveHeight",	LXsTYPE_FLOAT);
-        ac.SetDefault  (2.0f, 0);
+        ac.SetDefault  (1.0f, 0);
         
         ac.NewChannel  ("surfaceTension",	LXsTYPE_FLOAT);
         ac.SetDefault  (0.0f, 0);

@@ -34,9 +34,6 @@
 #include "agnerFog/stoc1.cpp"
 #include "agnerFog/userintf.cpp"
 #include "aaOceanClass.h"
-#include <mutex>
-
-std::mutex myMutex;
 
 // removed because of gcc-4 dependency
 // #include "vectorSSE.h"
@@ -143,8 +140,8 @@ void aaOcean::input(int resolution, ULONG seed, float oceanScale, float oceanDep
 					float waveHeight, float chopAmount, float time, float loopTime, bool doFoam, bool doNormals)
 {
 	// forcing to be power of two, setting minimum resolution of 2^4
-    if (resolution < 0)
-        resolution = 0;
+    if (resolution < 4)
+        resolution = 4;
     if (resolution > 12)
         resolution = 12;
 	resolution	= (int)pow(2.0f, abs(resolution));
@@ -854,27 +851,6 @@ void aaOcean::getOceanArray(float *&outArray, aaOcean::arrayType type)
 	{
 		outArray[i] = arrayPointer[i][arrayIndex];
 	}
-}
-
-void aaOcean::doEverything(float uCoord, float vCoord, double result[3], double misc[2], double Eigenminus[3], double Eigenplus[3])
-{
-    Eigenplus[1] = Eigenminus[1] = 0.0;
-    result[1] = getOceanData(uCoord, vCoord, aaOcean::eHEIGHTFIELD);
-    if(isChoppy())
-    {
-        result[0] = getOceanData(uCoord, vCoord, aaOcean::eCHOPX);
-        result[2] = getOceanData(uCoord, vCoord, aaOcean::eCHOPZ);
-        Eigenminus[0] = getOceanData(uCoord, vCoord, aaOcean::eEIGENMINUSX);
-        Eigenminus[2] = getOceanData(uCoord, vCoord, aaOcean::eEIGENMINUSZ);
-        Eigenplus[0] = getOceanData(uCoord, vCoord, aaOcean::eEIGENPLUSX);
-        Eigenplus[2] = getOceanData(uCoord, vCoord, aaOcean::eEIGENPLUSZ);
-        misc[0] = getOceanData(uCoord, vCoord, aaOcean::eFOAM);
-    } else {
-        Eigenminus[0] = Eigenminus[2] = Eigenplus[0] = Eigenplus[2] = 0.0;
-        result[0] = 0.0;
-        result[2] = 0.0;
-        misc[0] = 0.0;
-    }
 }
 
 float aaOcean::getOceanData(float uCoord, float vCoord, aaOcean::arrayType type) const

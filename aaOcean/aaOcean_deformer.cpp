@@ -47,7 +47,7 @@ LXtTagInfoDesc CPackage::descInfo[] = {
 
 
 static LXtTextValueHint hint_resolution[] = {
-    1,			"&min",		// int min 1
+    4,			"&min",		// int min 4
     12,			"&max",		// int max 12
     -1,			NULL
 };
@@ -65,7 +65,7 @@ LxResult CPackage::pkg_SetupChannels(ILxUnknownID addChan)
 	ac.NewChannel  (Cs_MORPH_MAPNAME,	LXsTYPE_VERTMAPNAME);
 
     ac.NewChannel  ("resolution",	LXsTYPE_INTEGER);
-	ac.SetDefault  (0.0, 2);
+	ac.SetDefault  (0.0, 4);
     ac.SetHint(hint_resolution);
     
 	ac.NewChannel  ("oceanSize",			LXsTYPE_FLOAT);
@@ -139,9 +139,23 @@ LxResult CPackage::pkg_Attach (void **ppvObj)
 
 void CChanState::buildOcean()
 {
-    m_pOcean->input(	resolution, (unsigned long)seed, oceanSize,oceanDepth, surfaceTension, waveSize, waveSmooth, waveDirection,
-              waveAlign, waveReflection, waveSpeed, waveHeight, waveChop, time, repeatTime, doFoam,
-              doNormals);
+    m_pOcean->input(resolution,
+                    (unsigned long)seed,
+                    oceanSize,
+                    oceanDepth,
+                    surfaceTension,
+                    waveSize,
+                    waveSmooth,
+                    waveDirection,
+                    waveAlign,
+                    waveReflection,
+                    waveSpeed,
+                    waveHeight,
+                    waveChop,
+                    time,
+                    repeatTime,
+                    doFoam,
+                    doNormals);
 }
 
 void CChanState::setUpOceanPtrs(aaOcean *ocean)
@@ -189,9 +203,9 @@ void CChanState::Read (CLxUser_Attributes &attr, unsigned index)
         {
             resolution = 12;
         }
-        if(resolution < 1)
+        if(resolution < 4)
         {
-            resolution = 1;
+            resolution = 4;
         }
 		
         oceanSize = attr.Float (index++);
@@ -350,8 +364,22 @@ LxResult CModifierElement::EvalCache (CLxUser_Evaluation &eval, CLxUser_Attribut
     doNormals = infl->cur.doNormals;
     seed = infl->cur.seed;
 
-    pOcean->input(	resolution, (unsigned long)seed, oceanSize,oceanDepth, surfaceTension, waveSize, waveSmooth, waveDirection,
-                    waveAlign, waveReflection, waveSpeed, waveHeight, waveChop, infl->cur.time, repeatTime, doFoam,
+    pOcean->input(	resolution,
+                    (unsigned long)seed,
+                    oceanSize,
+                    oceanDepth,
+                    surfaceTension,
+                    waveSize,
+                    waveSmooth,
+                    waveDirection,
+                    waveAlign,
+                    waveReflection,
+                    waveSpeed,
+                    waveHeight,
+                    waveChop,
+                    infl->cur.time,
+                    repeatTime,
+                    doFoam,
                     doNormals);
     infl->cur.setUpOceanPtrs(pOcean);
 

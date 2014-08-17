@@ -49,7 +49,6 @@ public:
 				float   repeatTime,
 				bool	doFoam,
 				bool	doNormals);
-    void doEverything(float uCoord, float vCoord, double result[3], double misc[2], double Eigenminus[3], double Eigenplus[3]);
 	float getOceanData(float uCoord, float vCoord, aaOcean::arrayType type) const;
 	void getOceanArray(float *&outArray, aaOcean::arrayType type);
 	void clearResidualArrays();

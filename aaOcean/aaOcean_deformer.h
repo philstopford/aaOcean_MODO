@@ -75,7 +75,7 @@ class CChanState : public CLxObject
 		LXtMatrix		 xfrm;
 		bool			 enabled;
 
-        int				 resolution; // default is 2
+        int				 resolution; // default is 4
 		float oceanSize; // default is 100.0
 		float waveHeight; // default is 2.0
         float waveSize; // default is 4.0
@@ -127,7 +127,7 @@ class CModifierElement : public CLxItemModifierElement
     public:
 		unsigned	 index;
         aaOcean *pOcean;
-        int				 resolution; // default is 2
+        int				 resolution; // default is 4
         float oceanSize; // default is 100.0
         float waveHeight; // default is 2.0
         float waveSize; // default is 4.0
@@ -147,7 +147,7 @@ class CModifierElement : public CLxItemModifierElement
 		CModifierElement()
 		{
 			pOcean = new aaOcean();
-            resolution = 2;
+            resolution = 4;
             oceanSize =  100.0;
             waveHeight  = 2.0;
             waveSize = 4.0; // default is 4.0
