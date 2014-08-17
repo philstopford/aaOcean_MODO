@@ -313,6 +313,9 @@ void aaOceanTexture::vtx_Evaluate (ILxUnknownID etor, int *idx, ILxUnknownID vec
     float value = 0.0; // value output
     float alpha = 1.0; // alpha output
 
+    float x_pos = tInp->uvw[0]/rd->m_oceanSize;
+    float z_pos = tInp->uvw[2]/rd->m_oceanSize;
+
 	if(m_ocean != NULL)
     {
         tOut->direct   = 1;
@@ -324,11 +327,11 @@ void aaOceanTexture::vtx_Evaluate (ILxUnknownID etor, int *idx, ILxUnknownID vec
         
         if(rd->m_outputType == 0) // normal displacement texture configuration
         {
-            result[1] = m_ocean->getOceanData(tInp->uvw[0]/rd->m_oceanSize, tInp->uvw[2]/rd->m_oceanSize, aaOcean::eHEIGHTFIELD);
+            result[1] = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eHEIGHTFIELD);
             if (m_ocean->isChoppy())
             {
-                result[0] = m_ocean->getOceanData(tInp->uvw[0]/rd->m_oceanSize, tInp->uvw[2]/rd->m_oceanSize, aaOcean::eCHOPX);
-                result[2] = m_ocean->getOceanData(tInp->uvw[0]/rd->m_oceanSize, tInp->uvw[2]/rd->m_oceanSize, aaOcean::eCHOPZ);
+                result[0] = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eCHOPX);
+                result[2] = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eCHOPZ);
             } else {
                 result[0] = 0.0;
                 result[2] = 0.0;
@@ -345,23 +348,23 @@ void aaOceanTexture::vtx_Evaluate (ILxUnknownID etor, int *idx, ILxUnknownID vec
         {
             if(rd->m_doFoam == true)
             {
-                value = m_ocean->getOceanData(tInp->uvw[0]/rd->m_oceanSize, tInp->uvw[2]/rd->m_oceanSize, aaOcean::eFOAM);
+                value = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eFOAM);
             }
         }
         if(rd->m_outputType == 2) // Eigenvalues - minus
         {
             if(rd->m_doFoam == true)
             {
-                result[0] = m_ocean->getOceanData(tInp->uvw[0]/rd->m_oceanSize, tInp->uvw[2]/rd->m_oceanSize, aaOcean::eEIGENMINUSX);
-                result[2] = m_ocean->getOceanData(tInp->uvw[0]/rd->m_oceanSize, tInp->uvw[2]/rd->m_oceanSize, aaOcean::eEIGENMINUSZ);
+                result[0] = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eEIGENMINUSX);
+                result[2] = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eEIGENMINUSZ);
             }
         }
         if(rd->m_outputType == 3) // Eigenvalues - plus
         {
             if(rd->m_doFoam == true)
             {
-                result[0] = m_ocean->getOceanData(tInp->uvw[0]/rd->m_oceanSize, tInp->uvw[2]/rd->m_oceanSize, aaOcean::eEIGENPLUSX);
-                result[2] = m_ocean->getOceanData(tInp->uvw[0]/rd->m_oceanSize, tInp->uvw[2]/rd->m_oceanSize, aaOcean::eEIGENPLUSZ);
+                result[0] = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eEIGENPLUSX);
+                result[2] = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eEIGENPLUSZ);
             }
         }
         // Note that modo expects textures to output the right kind of data based on the context. This is the reason for checking against

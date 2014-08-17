@@ -529,18 +529,21 @@ aaOceanChanMod::cmod_Evaluate (
     Eigenminus[0] = Eigenminus[1] = Eigenminus[2] = 0.0;
     Eigenplus[0] = Eigenplus[1] = Eigenplus[2] = 0.0;
 
-    result[1] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eHEIGHTFIELD);
+    float x_pos = od->m_x/od->m_oceanSize;
+    float z_pos = od->m_z/od->m_oceanSize;
+
+    result[1] = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eHEIGHTFIELD);
     if (m_ocean->isChoppy())
     {
-        result[0] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eCHOPX);
-        result[2] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eCHOPZ);
+        result[0] = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eCHOPX);
+        result[2] = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eCHOPZ);
         if(od->m_doFoam)
         {
-            foam = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eFOAM);
-            Eigenminus[0] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eEIGENMINUSX);
-            Eigenminus[2] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eEIGENMINUSZ);
-            Eigenplus[0] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eEIGENPLUSX);
-            Eigenplus[2] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eEIGENPLUSZ);
+            foam = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eFOAM);
+            Eigenminus[0] = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eEIGENMINUSX);
+            Eigenminus[2] = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eEIGENMINUSZ);
+            Eigenplus[0] = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eEIGENPLUSX);
+            Eigenplus[2] = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eEIGENPLUSZ);
         }
     } else {
         result[0] = 0.0;
@@ -551,9 +554,9 @@ aaOceanChanMod::cmod_Evaluate (
     {
         normals[0] = normals[1] = normals[2] = 0.0;
     } else {
-        normals[0] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eNORMALSX);
-        normals[1] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eNORMALSY);
-        normals[2] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eNORMALSZ);
+        normals[0] = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eNORMALSX);
+        normals[1] = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eNORMALSY);
+        normals[2] = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eNORMALSZ);
     }
     chanMod.WriteOutputFloat (attr, cm_idx_displacementX, result[0]); // vector, normalize to 0-1, 0.5 is no displacement
     chanMod.WriteOutputFloat (attr, cm_idx_displacementY, result[1]); // vector, normalize to 0-1, 0.5 is no displacement
