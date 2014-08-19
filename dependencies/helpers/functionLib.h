@@ -4,6 +4,9 @@
 #include <assert.h>
 #ifdef _MSC_VER
 #include <malloc.h>
+#else
+#include <stdlib.h>
+#include <stdint.h>
 #endif
 
 inline float DegsToRads(float degrees)	// Degrees to radians conversion...

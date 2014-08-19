@@ -50,8 +50,9 @@ class aaOceanTexture : public CLxImpl_ValueTexture
         unsigned		tin_offset,tinDsp_offset;
         LXtItemType		my_type;
 
+#ifndef TEXRENDDATA
         aaOcean *m_ocean;
-
+#endif
         unsigned m_idx_outputType;
 		unsigned m_idx_resolution;
 		unsigned m_idx_oceanSize;
@@ -93,7 +94,9 @@ class aaOceanTexture : public CLxImpl_ValueTexture
         class RendData {
 			
             public:
-
+#ifdef TEXRENDDATA
+                aaOcean *m_ocean;
+#endif
                 int m_outputType; // default is 0
                 int		m_resolution; // default is 2
                 float m_oceanSize; // default is 100.0

@@ -423,8 +423,6 @@ aaOceanChanMod::cmod_Evaluate (
 
     CLxUser_Attributes	 at (attr);
     OceanData		*od = new OceanData;
-    if(m_ocean == NULL)
-        m_ocean = new aaOcean();
     
     // Variables used to handle returned values from chanMod.ReadInput* methods.
     double dTemp; // used for 'ReadFloat' where modo's SDK returns a double.
@@ -500,8 +498,8 @@ aaOceanChanMod::cmod_Evaluate (
     chanMod.ReadInputFloat (attr, cm_idx_time, &dTemp);
     od->m_time = (float) dTemp;
 
-    // WORKING - DISABLED FOR EXPERIMENT.
-    // m_ocean = new aaOcean();
+    if(m_ocean == NULL)
+        m_ocean = new aaOcean();
     
     // We scale the height because aaOcean scales it down again internally.
     m_ocean->input(	od->m_resolution,

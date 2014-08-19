@@ -156,7 +156,7 @@ class aaOceanChanMod
                 float m_seed; // default is 1.0
                 float m_repeatTime; // default is 1000.0
                 bool m_doFoam; // default is FALSE for now.
-                bool m_doNormals = false; // default is FALSE and hard-coded since compiler support is missing from library
+                bool m_doNormals; // default is FALSE and hard-coded since compiler support is missing from library
 
                 float m_time;
         };
