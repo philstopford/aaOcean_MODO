@@ -238,7 +238,7 @@ LxResult aaOceanTexture::vtx_ReadChannels(ILxUnknownID attr, void  **ppvData)
     {
         m_ocean = new aaOcean();
     }
-        // We scale the height because aaOcean scales it down again internally.
+    // We scale the height because aaOcean scales it down again internally.
     m_ocean->input( rd->m_resolution,
                         (unsigned long)rd->m_seed,
                         rd->m_oceanSize,

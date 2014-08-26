@@ -269,7 +269,8 @@ void aaOcean::allocateBaseArrays()
 	m_omega		= (float*) aligned_malloc(size * sizeof(float)); 
 	m_rand1		= (float*) aligned_malloc(size * sizeof(float)); 
 	m_rand2		= (float*) aligned_malloc(size * sizeof(float)); 
-	
+
+#ifndef AAOCEAN1THREAD
 	if(m_resolution > 254)
 	{
 		int threads = omp_get_num_procs();
@@ -277,6 +278,7 @@ void aaOcean::allocateBaseArrays()
 		fftwf_plan_with_nthreads(threads);
 	}
 	else
+#endif
 		fftwf_plan_with_nthreads(1);
 
 	m_fft_htField	= (fftwf_complex*) fftwf_malloc(size * sizeof(fftwf_complex));
@@ -374,6 +376,7 @@ void aaOcean::clearResidualArrays()
 
 void aaOcean::clearArrays()
 {
+    
     bool useDestroy = true; // added to control fftw destroy_plan behavior in this routine.
 	if(m_isAllocated)
 	{
@@ -885,13 +888,46 @@ float aaOcean::getOceanData(float uCoord, float vCoord, aaOcean::arrayType type)
 	xMinus1 = wrap(x - 1) * m_resolution;
 	xPlus1	= wrap(x + 1) * m_resolution;
 	xPlus2	= wrap(x + 2) * m_resolution;
-	x		= x	* m_resolution;
+	x		= wrap(x)	* m_resolution;
 	yMinus1 = wrap(y - 1);
 	yPlus1	= wrap(y + 1);
 	yPlus2	= wrap(y + 2);
 	
 	// get the pointer to the aaOcean array that we want to pull data from
 	getArrayType(type, arrayPointer, arrayIndex);
+
+	assert(xMinus1	+ yMinus1 >= 0);
+	assert(x			+ yMinus1 >= 0);
+	assert(xPlus1		+ yMinus1 >= 0);
+	assert(xPlus2		+ yMinus1 >= 0);
+	assert(xMinus1	+	y >= 0);
+	assert(x			+	y >= 0);
+	assert(xPlus1		+	y >= 0);
+	assert(xPlus2		+	y >= 0);
+	assert(xMinus1	+ yPlus1 >= 0);
+	assert(x			+ yPlus1 >= 0);
+	assert(xPlus1		+ yPlus1 >= 0);
+	assert(xPlus2		+ yPlus1 >= 0);
+	assert(xMinus1	+ yPlus2 >= 0);
+	assert(x			+ yPlus2 >= 0);
+	assert(xPlus1		+ yPlus2 >= 0);
+	assert(xPlus2		+ yPlus2 >= 0);
+	assert(xMinus1	+ yMinus1 < m_resolution * m_resolution);
+	assert(x			+ yMinus1 < m_resolution * m_resolution);
+	assert(xPlus1		+ yMinus1 < m_resolution * m_resolution);
+	assert(xPlus2		+ yMinus1 < m_resolution * m_resolution);
+	assert(xMinus1	+	y < m_resolution * m_resolution);
+	assert(x			+	y < m_resolution * m_resolution);
+	assert(xPlus1		+	y < m_resolution * m_resolution);
+	assert(xPlus2		+	y < m_resolution * m_resolution);
+	assert(xMinus1	+ yPlus1 < m_resolution * m_resolution);
+	assert(x			+ yPlus1 < m_resolution * m_resolution);
+	assert(xPlus1		+ yPlus1 < m_resolution * m_resolution);
+	assert(xPlus2		+ yPlus1 < m_resolution * m_resolution);
+	assert(xMinus1	+ yPlus2 < m_resolution * m_resolution);
+	assert(x			+ yPlus2 < m_resolution * m_resolution);
+	assert(xPlus1		+ yPlus2 < m_resolution * m_resolution);
+	assert(xPlus2		+ yPlus2 < m_resolution * m_resolution);
 
 	// prepare for catmul-rom interpolation
 	const float a1 = catmullRom(du, 
@@ -932,19 +968,25 @@ inline int aaOcean::wrap(int x) const
 {
 	// return if we are trying to wrap an index that
 	// does not need wrapping
-	if(x > 0 && x < m_resolution)
+	if(x >= 0 && x < m_resolution)
 		return x;
 
 	// m_resolution is always a power of two
 	// using a fast method for computing modulo of power-of-two numbers
+    // http://en.wikipedia.org/wiki/Power_of_two#Fast_algorithm_to_find_a_number_modulo_a_power_of_two
+    
+    // x = x & m_resolution - 1 will always yield a value >= 0 and < m_resolution
+    // because m_resolution is never negative, zero or 1.
 	x = x & (m_resolution - 1);
 
+    // As such, these checks are pointless, so let's disable them.
+    /*
 	if(x < 0)
 		x = m_resolution + x;
 	
 	if(x> (m_resolution - 1))
 		int x = 1;
-
+    */
 	return x;
 }
 

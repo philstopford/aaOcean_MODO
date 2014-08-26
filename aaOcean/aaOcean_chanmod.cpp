@@ -527,8 +527,8 @@ aaOceanChanMod::cmod_Evaluate (
     Eigenminus[0] = Eigenminus[1] = Eigenminus[2] = 0.0;
     Eigenplus[0] = Eigenplus[1] = Eigenplus[2] = 0.0;
 
-    float x_pos = od->m_x/od->m_oceanSize;
-    float z_pos = od->m_z/od->m_oceanSize;
+    float x_pos = od->m_x; // /od->m_oceanSize;
+    float z_pos = od->m_z; // /od->m_oceanSize;
 
     result[1] = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eHEIGHTFIELD);
     if (m_ocean->isChoppy())
