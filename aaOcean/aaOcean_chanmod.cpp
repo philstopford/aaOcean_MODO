@@ -590,15 +590,18 @@ aaOceanChanModPackage::aaOceanChanModPackage ()
         chanmod_factory.AddInterface (new CLxIfc_ChannelModItem<aaOceanChanMod>);
 }
 
-// UI Hints to define min and max
-// & is for int
-// % is for float
 static LXtTextValueHint hint_resolution[] = {
-    4,			"&min",		// int min 4
-    12,			"&max",		// int max 12
-    -1,			NULL
+    4,			"Map size : 16",
+    5,			"Map size : 32",
+    6,			"Map size : 64",
+    7,			"Map size : 128",
+    8,			"Map size : 256",
+    9,			"Map size : 512",
+    10,			"Map size : 1024",
+    11,			"Map size : 2048",
+    12,			"Map size : 4096",
+    4,			NULL
 };
-
 
         LxResult
 aaOceanChanModPackage::pkg_SetupChannels (

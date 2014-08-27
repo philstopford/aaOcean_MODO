@@ -35,6 +35,9 @@
 #include "agnerFog/userintf.cpp"
 #include "aaOceanClass.h"
 
+#include <mutex>
+std::mutex myMutex;
+
 // removed because of gcc-4 dependency
 // #include "vectorSSE.h"
 
@@ -270,7 +273,6 @@ void aaOcean::allocateBaseArrays()
 	m_rand1		= (float*) aligned_malloc(size * sizeof(float)); 
 	m_rand2		= (float*) aligned_malloc(size * sizeof(float)); 
 
-#ifndef AAOCEAN1THREAD
 	if(m_resolution > 254)
 	{
 		int threads = omp_get_num_procs();
@@ -278,7 +280,6 @@ void aaOcean::allocateBaseArrays()
 		fftwf_plan_with_nthreads(threads);
 	}
 	else
-#endif
 		fftwf_plan_with_nthreads(1);
 
 	m_fft_htField	= (fftwf_complex*) fftwf_malloc(size * sizeof(fftwf_complex));
