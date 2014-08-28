@@ -600,6 +600,8 @@ static LXtTextValueHint hint_resolution[] = {
     10,			"Map size : 1024",
     11,			"Map size : 2048",
     12,			"Map size : 4096",
+    13,			"Map size : 8192",
+    14,			"Map size : 16384",
     4,			NULL
 };
 
