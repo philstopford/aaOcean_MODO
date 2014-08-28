@@ -8,9 +8,9 @@ AAO_INC = dependencies/aaOcean/src
 HELPERS_INC = dependencies/helpers/
 OBJ_DIR=Linux/obj
 TARGET_DIR=Linux/build
-MYCXX = g++
-LINK = g++
-CXXFLAGS = -DMODO701 -DFFTWSINGLETHREADED -g -c -I$(LXSDK_INC) -I$(AAO_INC) -I$(HELPERS_INC) -fPIC -m64 -msse
+MYCXX = g++-4.6
+LINK = g++-4.6
+CXXFLAGS = -DMODO801 -g -c -I$(LXSDK_INC) -I$(AAO_INC) -I$(HELPERS_INC) -fPIC -m64 -msse
 LDFLAGS = -L$(LXSDK_BUILD) -L/usr/lib -lcommon -lfftw3f -lfftw3f_threads -lpthread -shared
 
 OBJS = $(AAO_INC)/aaOceanClass.o $(OBJ_DIR)/aaOcean_init.o $(OBJ_DIR)/aaOcean_texture.o $(OBJ_DIR)/aaOcean_chanmod.o $(OBJ_DIR)/aaOcean_deformer.o $(OBJ_DIR)/aaOcean_command.o
