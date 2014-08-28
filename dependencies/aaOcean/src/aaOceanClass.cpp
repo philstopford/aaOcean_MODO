@@ -22,7 +22,7 @@
 #ifdef _OPENMP
 #include <omp.h>
 #else
-#define omp_get_num_procs() 1
+#define omp_get_num_procs() 1 // arbitrary - seems to make little practical difference.
 #endif
 #include <climits>
 #include <float.h>
@@ -34,9 +34,6 @@
 #include "agnerFog/stoc1.cpp"
 #include "agnerFog/userintf.cpp"
 #include "aaOceanClass.h"
-
-#include <mutex>
-std::mutex myMutex;
 
 // removed because of gcc-4 dependency
 // #include "vectorSSE.h"
@@ -145,8 +142,8 @@ void aaOcean::input(int resolution, ULONG seed, float oceanScale, float oceanDep
 	// forcing to be power of two, setting minimum resolution of 2^4
     if (resolution < 4)
         resolution = 4;
-    if (resolution > 12)
-        resolution = 12;
+    if (resolution > 14)
+        resolution = 14;
 	resolution	= (int)pow(2.0f, abs(resolution));
 	reInit(resolution);
 
@@ -273,6 +270,7 @@ void aaOcean::allocateBaseArrays()
 	m_rand1		= (float*) aligned_malloc(size * sizeof(float)); 
 	m_rand2		= (float*) aligned_malloc(size * sizeof(float)); 
 
+#ifdef FFTWSINGLETHREADED
 	if(m_resolution > 254)
 	{
 		int threads = omp_get_num_procs();
@@ -280,6 +278,7 @@ void aaOcean::allocateBaseArrays()
 		fftwf_plan_with_nthreads(threads);
 	}
 	else
+#endif
 		fftwf_plan_with_nthreads(1);
 
 	m_fft_htField	= (fftwf_complex*) fftwf_malloc(size * sizeof(fftwf_complex));
@@ -893,6 +892,7 @@ float aaOcean::getOceanData(float uCoord, float vCoord, aaOcean::arrayType type)
 	yMinus1 = wrap(y - 1);
 	yPlus1	= wrap(y + 1);
 	yPlus2	= wrap(y + 2);
+    y       = wrap(y);
 	
 	// get the pointer to the aaOcean array that we want to pull data from
 	getArrayType(type, arrayPointer, arrayIndex);

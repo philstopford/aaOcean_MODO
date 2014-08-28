@@ -52,6 +52,8 @@ static LXtTextValueHint hint_resolution[] = {
     10,			"Map size : 1024",
     11,			"Map size : 2048",
     12,			"Map size : 4096",
+    13,			"Map size : 8192",
+    14,			"Map size : 16384",
     4,			NULL
 };
 
@@ -189,9 +191,9 @@ LxResult aaOceanTexture::vtx_ReadChannels(ILxUnknownID attr, void  **ppvData)
     }
 
 	rd->m_resolution = at.Int(m_idx_resolution);
-	if(rd->m_resolution > 12)
+	if(rd->m_resolution > 14)
     {
-        rd->m_resolution = 12;
+        rd->m_resolution = 14;
     }
 	if(rd->m_resolution < 4)
     {
