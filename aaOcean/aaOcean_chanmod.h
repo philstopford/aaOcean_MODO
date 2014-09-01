@@ -1,5 +1,5 @@
-#ifndef CMHOTMODO_H
-#define CMHOTMODO_H
+#ifndef CMAAOCEANMODO_H
+#define CMAAOCEANMODO_H
 
 #include <lx_item.hpp>
 #include <lx_package.hpp>
@@ -39,7 +39,6 @@ class aaOceanChanMod
         
         aaOceanChanMod ();
         ~aaOceanChanMod ();
-
         aaOcean *m_ocean;
 
         LxResult		 pins_Initialize (ILxUnknownID item, ILxUnknownID super) LXx_OVERRIDE;
@@ -71,7 +70,6 @@ class aaOceanChanMod
         unsigned m_idx_oceanDepth;
         unsigned m_idx_repeatTime;
         unsigned m_idx_doFoam;
-        // unsigned m_idx_doNormals;
 
         unsigned m_idx_seed;
         unsigned m_idx_time;
@@ -80,11 +78,6 @@ class aaOceanChanMod
         unsigned m_idx_displacementY;
         unsigned m_idx_displacementZ;
         unsigned m_idx_foam;
-        /*
-        unsigned m_idx_normalsX;
-        unsigned m_idx_normalsY;
-        unsigned m_idx_normalsZ;
-        */
         unsigned m_idx_chopX;
         unsigned m_idx_chopY;
         unsigned m_idx_chopZ;
@@ -111,7 +104,6 @@ class aaOceanChanMod
         unsigned cm_idx_oceanDepth;
         unsigned cm_idx_repeatTime;
         unsigned cm_idx_doFoam;
-        // unsigned cm_idx_doNormals;
 
         unsigned cm_idx_seed;
         unsigned cm_idx_time;
@@ -120,11 +112,6 @@ class aaOceanChanMod
         unsigned cm_idx_displacementY;
         unsigned cm_idx_displacementZ;
         unsigned cm_idx_foam;
-        /*
-        unsigned cm_idx_normalsX;
-        unsigned cm_idx_normalsY;
-        unsigned cm_idx_normalsZ;
-        */
         unsigned cm_idx_chopX;
         unsigned cm_idx_chopY;
         unsigned cm_idx_chopZ;
@@ -138,7 +125,6 @@ class aaOceanChanMod
         class OceanData {
             
             public:
-            
                 float m_x;
                 float m_z;
                 int		m_resolution; // default is 2
@@ -189,7 +175,4 @@ class aaOceanChanModPackage : public CLxImpl_Package
     }
 
 }
-#endif // CMHOTMODO_H
-
-    
-
+#endif // CMAAOCEANMODO_H

@@ -165,14 +165,6 @@ aaOceanChanMod::cmod_Allocate (
         cm_idx_doFoam = index;
         index++;
 
-        /*
-        // Lookup the index of the 'doNormals' channel and add as an input.
-        modItem.ChannelLookup ("doNormals", &m_idx_doNormals);
-        chanMod.AddInput (item, m_idx_doNormals);
-        cm_idx_doNormals = index;
-        index++;
-        */
-
         chanMod.AddTime ();
         cm_idx_time = index;
 
@@ -197,22 +189,6 @@ aaOceanChanMod::cmod_Allocate (
         cm_idx_foam = index;
         index++;
     
-        /*
-        // Lookup the index of the 'chop' channel and add it as an output.
-        modItem.ChannelLookup ("normals.X", &m_idx_normalsX);
-        chanMod.AddOutput (item, m_idx_normalsX);
-        cm_idx_normalsX = index;
-        index++;
-        modItem.ChannelLookup ("normals.Y", &m_idx_normalsY);
-        chanMod.AddOutput (item, m_idx_normalsY);
-        cm_idx_normalsY = index;
-        index++;
-        modItem.ChannelLookup ("normals.Z", &m_idx_normalsZ);
-        chanMod.AddOutput (item, m_idx_normalsZ);
-        cm_idx_normalsZ = index;
-        index++;
-        */
-
         // Lookup the index of the 'Eigenplus' channel and add it as an output.
         modItem.ChannelLookup ("Eigenplus.X", &m_idx_eigenplusX);
         chanMod.AddOutput (item, m_idx_eigenplusX);
@@ -248,12 +224,6 @@ aaOceanChanMod::cmod_Allocate (
 aaOceanChanMod::cmod_Cleanup (
         void			*data)
 {
-	OceanData		*od = (OceanData *) data;
-    
-	if(od != NULL)
-    {
-        delete od;
-    }
 }
 
 // Flags defines schematic rules for the channels. This applies when the modifier is added to the schematic.
@@ -273,23 +243,23 @@ aaOceanChanMod::cmod_Flags (
                         return LXfCHMOD_INPUT;
         }
         if (LXx_OK (modItem.ChannelLookup ("inputZ", &chanIdx))) {
-                if (index == chanIdx)
-                        return LXfCHMOD_INPUT;
+            if (index == chanIdx)
+                return LXfCHMOD_INPUT;
         }
     
         if (LXx_OK (modItem.ChannelLookup ("resolution", &chanIdx))) {
-                if (index == chanIdx)
-                        return LXfCHMOD_INPUT;
+            if (index == chanIdx)
+                return LXfCHMOD_INPUT;
         }
 
         if (LXx_OK (modItem.ChannelLookup ("oceanSize", &chanIdx))) {
-                if (index == chanIdx)
-                        return LXfCHMOD_INPUT;
+            if (index == chanIdx)
+                return LXfCHMOD_INPUT;
         }
 
         if (LXx_OK (modItem.ChannelLookup ("waveHeight", &chanIdx))) {
-                if (index == chanIdx)
-                        return LXfCHMOD_INPUT;
+            if (index == chanIdx)
+                return LXfCHMOD_INPUT;
         }
 
         if (LXx_OK (modItem.ChannelLookup ("surfaceTension", &chanIdx))) {
@@ -333,20 +303,15 @@ aaOceanChanMod::cmod_Flags (
         }
 
         if (LXx_OK (modItem.ChannelLookup ("seed", &chanIdx))) {
-                if (index == chanIdx)
-                        return LXfCHMOD_INPUT;
+            if (index == chanIdx)
+                return LXfCHMOD_INPUT;
         }
 
         if (LXx_OK (modItem.ChannelLookup ("doFoam", &chanIdx))) {
             if (index == chanIdx)
                 return LXfCHMOD_INPUT;
         }
-        /*
-        if (LXx_OK (modItem.ChannelLookup ("doNormals", &chanIdx))) {
-            if (index == chanIdx)
-                return LXfCHMOD_INPUT;
-        }
-         */
+
         if (LXx_OK (modItem.ChannelLookup ("repeatTime", &chanIdx))) {
             if (index == chanIdx)
                 return LXfCHMOD_INPUT;
@@ -366,23 +331,9 @@ aaOceanChanMod::cmod_Flags (
         }
     
         if (LXx_OK (modItem.ChannelLookup ("foam", &chanIdx))) {
-                if (index == chanIdx)
-                        return LXfCHMOD_OUTPUT;
-        }
-        /*
-        if (LXx_OK (modItem.ChannelLookup ("normals.X", &chanIdx))) {
             if (index == chanIdx)
                 return LXfCHMOD_OUTPUT;
         }
-        if (LXx_OK (modItem.ChannelLookup ("normals.Y", &chanIdx))) {
-            if (index == chanIdx)
-                return LXfCHMOD_OUTPUT;
-        }
-        if (LXx_OK (modItem.ChannelLookup ("normals.Z", &chanIdx))) {
-            if (index == chanIdx)
-                return LXfCHMOD_OUTPUT;
-        }
-        */
 
         if (LXx_OK (modItem.ChannelLookup ("Eigenplus.X", &chanIdx))) {
             if (index == chanIdx)
@@ -413,6 +364,17 @@ aaOceanChanMod::cmod_Flags (
         return 0;
 }
 
+inline void mwnormalize(float *vec)
+{
+	double magSq = vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2];
+	if (magSq > 0.0f)
+	{ // check for divide-by-zero
+		double oneOverMag = 1.0 / sqrt(magSq);
+		vec[0] *= oneOverMag;
+		vec[1] *= oneOverMag;
+		vec[2] *= oneOverMag;
+	}
+}
         LxResult
 aaOceanChanMod::cmod_Evaluate (
         ILxUnknownID		 cmod,		// ILxChannelModifierID
@@ -437,17 +399,17 @@ aaOceanChanMod::cmod_Evaluate (
 
     chanMod.ReadInputInt (attr, cm_idx_resolution, &iTemp);
     od->m_resolution = iTemp;
-	if(od->m_resolution > 12)
+	if(od->m_resolution > 14)
     {
-        od->m_resolution = 12;
+        od->m_resolution = 14;
     }
 	if(od->m_resolution < 4)
     {
         od->m_resolution = 4;
     }
 
-    chanMod.ReadInputInt (attr, cm_idx_oceanSize, &iTemp);
-    od->m_oceanSize = iTemp;
+    chanMod.ReadInputFloat (attr, cm_idx_oceanSize, &dTemp);
+    od->m_oceanSize = (float) dTemp;
     if(od->m_oceanSize <= 0)
     {
         od->m_oceanSize = 0.01; // safety value.
@@ -489,10 +451,6 @@ aaOceanChanMod::cmod_Evaluate (
     chanMod.ReadInputInt (attr, cm_idx_doFoam, &iTemp);
     od->m_doFoam = (bool) iTemp;
 
-    /* // Disabled as vector class not compatible.
-    chanMod.ReadInputInt (attr, cm_idx_doNormals, &iTemp);
-    od->m_doNormals = (bool) iTemp;
-     */
     od->m_doNormals = false;
 
     chanMod.ReadInputFloat (attr, cm_idx_time, &dTemp);
@@ -504,7 +462,8 @@ aaOceanChanMod::cmod_Evaluate (
     // We scale the height because aaOcean scales it down again internally.
     m_ocean->input(	od->m_resolution,
                     (unsigned long)od->m_seed,
-                    od->m_oceanSize, od->m_oceanDepth,
+                    od->m_oceanSize,
+                    od->m_oceanDepth,
                     od->m_surfaceTension,
                     od->m_waveSize,
                     od->m_waveSmooth,
@@ -519,16 +478,16 @@ aaOceanChanMod::cmod_Evaluate (
                     od->m_doFoam,
                     od->m_doNormals);
 
-    double result[3], normals[3];
-    double foam, Eigenminus[3], Eigenplus[3];
+    float result[3];
+    float foam, Eigenminus[3], Eigenplus[3];
     
-    result[0] = result[1] = result[2] = 0.0;
+    // result[0] = result[1] = result[2] = 0.0;
     foam = 0.0;
     Eigenminus[0] = Eigenminus[1] = Eigenminus[2] = 0.0;
     Eigenplus[0] = Eigenplus[1] = Eigenplus[2] = 0.0;
-
-    float x_pos = od->m_x; // /od->m_oceanSize;
-    float z_pos = od->m_z; // /od->m_oceanSize;
+    
+    float x_pos = od->m_x/od->m_oceanSize;
+    float z_pos = od->m_z/od->m_oceanSize;
 
     result[1] = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eHEIGHTFIELD);
     if (m_ocean->isChoppy())
@@ -548,23 +507,17 @@ aaOceanChanMod::cmod_Evaluate (
         result[2] = 0.0;
     }
     
-    if(od->m_doNormals == false)
-    {
-        normals[0] = normals[1] = normals[2] = 0.0;
-    } else {
-        normals[0] = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eNORMALSX);
-        normals[1] = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eNORMALSY);
-        normals[2] = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eNORMALSZ);
-    }
+    mwnormalize(result);
+
+    // Fit to 0-1 range, with 0.5 being no displacement
+    result[0] = (result[0]+1)/2;
+    result[1] = (result[1]+1)/2;
+    result[2] = (result[2]+1)/2;
+
     chanMod.WriteOutputFloat (attr, cm_idx_displacementX, result[0]); // vector, normalize to 0-1, 0.5 is no displacement
     chanMod.WriteOutputFloat (attr, cm_idx_displacementY, result[1]); // vector, normalize to 0-1, 0.5 is no displacement
     chanMod.WriteOutputFloat (attr, cm_idx_displacementZ, result[2]); // vector, normalize to 0-1, 0.5 is no displacement
     chanMod.WriteOutputFloat (attr, cm_idx_foam, foam);
-    /*
-    chanMod.WriteOutputFloat (attr, cm_idx_normalsX, normals[0]); // vector
-    chanMod.WriteOutputFloat (attr, cm_idx_normalsY, normals[1]); // vector
-    chanMod.WriteOutputFloat (attr, cm_idx_normalsZ, normals[2]); // vector
-    */
     chanMod.WriteOutputFloat (attr, cm_idx_eigenminusX, Eigenminus[0]); // vector
     chanMod.WriteOutputFloat (attr, cm_idx_eigenminusY, Eigenminus[1]); // vector
     chanMod.WriteOutputFloat (attr, cm_idx_eigenminusZ, Eigenminus[2]); // vector
@@ -600,8 +553,8 @@ static LXtTextValueHint hint_resolution[] = {
     10,			"Map size : 1024",
     11,			"Map size : 2048",
     12,			"Map size : 4096",
-    13,			"Map size : 8192",
-    14,			"Map size : 16384",
+    13,			"Map size : 8192 (memory hungry!)",
+    14,			"Map size : 16384 (very memory hungry!)",
     4,			NULL
 };
 
@@ -667,10 +620,7 @@ aaOceanChanModPackage::pkg_SetupChannels (
         
         ac.NewChannel  ("doFoam",	LXsTYPE_INTEGER);
         ac.SetDefault  (0.0, 0);
-        
-        ac.NewChannel  ("doNormals",	LXsTYPE_INTEGER);
-        ac.SetDefault  (0.0, 0);
-        
+    
         // Output channels below, this being defined in Flags and Allocate.
 
         // Note that these vectors end up having three channels (.X, .Y, .Z) elsewhere, leading to checks for displacement.X, etc. Don't get confused.
@@ -679,12 +629,6 @@ aaOceanChanModPackage::pkg_SetupChannels (
         LXx_VCLR (displacement);
         ac.SetDefaultVec (displacement);
 
-        /*
-        ac.NewChannel ("normals", LXsTYPE_FLOAT);
-        ac.SetVector(LXsCHANVEC_XYZ);
-        LXx_VCLR (normals);
-        ac.SetDefaultVec (normals);
-        */
         ac.NewChannel ("foam", LXsTYPE_FLOAT);
         ac.SetDefault (0.0f, 0);
 

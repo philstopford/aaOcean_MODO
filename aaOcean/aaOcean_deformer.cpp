@@ -38,7 +38,7 @@ void CInstance::pins_Cleanup (void)
  */
 
 LXtTagInfoDesc CPackage::descInfo[] = {
-        { LXsPKG_SUPERTYPE,		LXsITYPE_LOCATOR	},
+        { LXsPKG_SUPERTYPE,		LXsITYPE_LOCDEFORM	},
         { LXsPKG_DEFORMER_CHANNEL,	LXsICHAN_MORPHDEFORM_MESHINF },
         { LXsPKG_DEFORMER_FLAGS,	"+WX"			},	// no weight, no xfrm
         { LXsPKG_DEFORMER_CREATECMD,	"aaOcean.create"	},
@@ -55,8 +55,8 @@ static LXtTextValueHint hint_resolution[] = {
     10,			"Map size : 1024",
     11,			"Map size : 2048",
     12,			"Map size : 4096",
-    13,			"Map size : 8192",
-    14,			"Map size : 16384",
+    13,			"Map size : 8192 (memory hungry!)",
+    14,			"Map size : 16384 (very memory hungry!)",
     4,			NULL
 };
 

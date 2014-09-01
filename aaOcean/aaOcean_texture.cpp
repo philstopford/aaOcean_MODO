@@ -52,8 +52,8 @@ static LXtTextValueHint hint_resolution[] = {
     10,			"Map size : 1024",
     11,			"Map size : 2048",
     12,			"Map size : 4096",
-    13,			"Map size : 8192",
-    14,			"Map size : 16384",
+    13,			"Map size : 8192 (memory hungry!)",
+    14,			"Map size : 16384 (very memory hungry!)",
     4,			NULL
 };
 
@@ -129,9 +129,6 @@ LxResult aaOceanTexture::vtx_SetupChannels (ILxUnknownID addChan)
 	ac.SetDefault  (0.0, 0);
     ac.SetHint(hint_boolLimit);
 
-    // ac.NewChannel  ("doNormals",	LXsTYPE_INTEGER);
-	// ac.SetDefault  (0.0, 0);
-
     return LXe_OK;
 }
 
@@ -159,7 +156,6 @@ LxResult aaOceanTexture::vtx_LinkChannels (ILxUnknownID eval, ILxUnknownID	item)
     m_idx_seed = ev.AddChan(item, "seed");
     m_idx_repeatTime = ev.AddChan(item, "repeatTime");
     m_idx_doFoam = ev.AddChan(item, "doFoam");
-    // m_idx_doNormals = ev.AddChan(item, "doNormals");
     
 	// m_idx_time = ev.AddChan (item, "time");
 
