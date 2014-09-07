@@ -270,7 +270,7 @@ void aaOcean::allocateBaseArrays()
 	m_rand1		= (float*) aligned_malloc(size * sizeof(float)); 
 	m_rand2		= (float*) aligned_malloc(size * sizeof(float)); 
 
-#ifdef FFTWSINGLETHREADED
+#ifndef FFTWSINGLETHREADED
 	if(m_resolution > 254)
 	{
 		int threads = omp_get_num_procs();
@@ -960,6 +960,10 @@ float aaOcean::getOceanData(float uCoord, float vCoord, aaOcean::arrayType type)
 
 inline float aaOcean::catmullRom(const float t, const float a, const float b, const float c, const float d) const
 {
+    
+    // Where a, b, c, d are four points on the spline and t is the portion of the distance between the two control points b and c
+    // a and d satisfy the need for two points on either side of the desired point on the spline
+    
 	return  0.5f * ( ( 2.0f * b ) + ( -a + c ) * t + 
 			( 2.0f * a - 5.0f * b + 4.0f * c - d ) * t * t + 
 			( -a + 3.0f * b - 3.0f * c + d )* t * t * t );
