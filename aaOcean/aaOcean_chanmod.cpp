@@ -215,7 +215,6 @@ aaOceanChanMod::cmod_Allocate (
         modItem.ChannelLookup ("Eigenminus.Z", &m_idx_eigenminusZ);
         chanMod.AddOutput (item, m_idx_eigenminusZ);
         cm_idx_eigenminusZ = index;
-        index++;
     
         return LXe_OK;
 }
@@ -414,6 +413,10 @@ aaOceanChanMod::cmod_Evaluate (
     {
         od->m_oceanSize = 0.01; // safety value.
     }
+
+    // Let's scale our values - experiment.
+    od->m_x = od->m_x/od->m_oceanSize;
+    od->m_z = od->m_z/od->m_oceanSize;
     
     chanMod.ReadInputFloat (attr, cm_idx_waveHeight, &dTemp);
     od->m_waveHeight = (float) dTemp;
@@ -442,8 +445,8 @@ aaOceanChanMod::cmod_Evaluate (
     chanMod.ReadInputFloat (attr, cm_idx_oceanDepth, &dTemp);
     od->m_oceanDepth = (float) dTemp;
 
-    chanMod.ReadInputFloat (attr, cm_idx_seed, &dTemp);
-    od->m_seed = (float) dTemp;
+    chanMod.ReadInputInt (attr, cm_idx_seed, &iTemp);
+    od->m_seed = iTemp;
 
     chanMod.ReadInputFloat (attr, cm_idx_repeatTime, &dTemp);
     od->m_repeatTime = (float) dTemp;
@@ -457,7 +460,9 @@ aaOceanChanMod::cmod_Evaluate (
     od->m_time = (float) dTemp;
 
     if(m_ocean == NULL)
+    {
         m_ocean = new aaOcean();
+    }
     
     // We scale the height because aaOcean scales it down again internally.
     m_ocean->input(	od->m_resolution,
@@ -479,51 +484,45 @@ aaOceanChanMod::cmod_Evaluate (
                     od->m_doNormals);
 
     float result[3];
-    float foam, Eigenminus[3], Eigenplus[3];
+    float foam, eigenminus[3], eigenplus[3];
+    bool foamy = false;
     
-    // result[0] = result[1] = result[2] = 0.0;
-    foam = 0.0;
-    Eigenminus[0] = Eigenminus[1] = Eigenminus[2] = 0.0;
-    Eigenplus[0] = Eigenplus[1] = Eigenplus[2] = 0.0;
-    
-    float x_pos = od->m_x/od->m_oceanSize;
-    float z_pos = od->m_z/od->m_oceanSize;
-
-    result[1] = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eHEIGHTFIELD);
+    result[1] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eHEIGHTFIELD);
     if (m_ocean->isChoppy())
     {
-        result[0] = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eCHOPX);
-        result[2] = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eCHOPZ);
+        result[0] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eCHOPX);
+        result[2] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eCHOPZ);
         if(od->m_doFoam)
         {
-            foam = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eFOAM);
-            Eigenminus[0] = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eEIGENMINUSX);
-            Eigenminus[2] = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eEIGENMINUSZ);
-            Eigenplus[0] = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eEIGENPLUSX);
-            Eigenplus[2] = m_ocean->getOceanData(x_pos, z_pos, aaOcean::eEIGENPLUSZ);
+            foamy = true;
+            foam = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eFOAM);
+            eigenminus[0] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eEIGENMINUSX);
+            eigenminus[2] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eEIGENMINUSZ);
+            eigenplus[0] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eEIGENPLUSX);
+            eigenplus[2] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eEIGENPLUSZ);
         }
     } else {
-        result[0] = 0.0;
-        result[2] = 0.0;
+        result[0] = result[2] = 0.0f;
+    }
+    if (foamy == false)
+    {
+        foam = 0.0f;
+        eigenminus[0] = eigenminus[1] = eigenminus[2] = 0.0f;
+        eigenplus[0] = eigenplus[1] = eigenplus[2] = 0.0f;
     }
     
     mwnormalize(result);
 
-    // Fit to 0-1 range, with 0.5 being no displacement
-    result[0] = (result[0]+1)/2;
-    result[1] = (result[1]+1)/2;
-    result[2] = (result[2]+1)/2;
-
-    chanMod.WriteOutputFloat (attr, cm_idx_displacementX, result[0]); // vector, normalize to 0-1, 0.5 is no displacement
-    chanMod.WriteOutputFloat (attr, cm_idx_displacementY, result[1]); // vector, normalize to 0-1, 0.5 is no displacement
-    chanMod.WriteOutputFloat (attr, cm_idx_displacementZ, result[2]); // vector, normalize to 0-1, 0.5 is no displacement
+    chanMod.WriteOutputFloat (attr, cm_idx_displacementX, (result[0]+1)/2); // vector, normalize to 0-1, 0.5 is no displacement
+    chanMod.WriteOutputFloat (attr, cm_idx_displacementY, (result[1]+1)/2); // vector, normalize to 0-1, 0.5 is no displacement
+    chanMod.WriteOutputFloat (attr, cm_idx_displacementZ, (result[2]+1)/2); // vector, normalize to 0-1, 0.5 is no displacement
     chanMod.WriteOutputFloat (attr, cm_idx_foam, foam);
-    chanMod.WriteOutputFloat (attr, cm_idx_eigenminusX, Eigenminus[0]); // vector
-    chanMod.WriteOutputFloat (attr, cm_idx_eigenminusY, Eigenminus[1]); // vector
-    chanMod.WriteOutputFloat (attr, cm_idx_eigenminusZ, Eigenminus[2]); // vector
-    chanMod.WriteOutputFloat (attr, cm_idx_eigenplusX, Eigenplus[0]); // vector
-    chanMod.WriteOutputFloat (attr, cm_idx_eigenplusY, Eigenplus[1]); // vector
-    chanMod.WriteOutputFloat (attr, cm_idx_eigenplusZ, Eigenplus[2]); // vector
+    chanMod.WriteOutputFloat (attr, cm_idx_eigenminusX, eigenminus[0]); // vector
+    chanMod.WriteOutputFloat (attr, cm_idx_eigenminusY, eigenminus[1]); // vector
+    chanMod.WriteOutputFloat (attr, cm_idx_eigenminusZ, eigenminus[2]); // vector
+    chanMod.WriteOutputFloat (attr, cm_idx_eigenplusX, eigenplus[0]); // vector
+    chanMod.WriteOutputFloat (attr, cm_idx_eigenplusY, eigenplus[1]); // vector
+    chanMod.WriteOutputFloat (attr, cm_idx_eigenplusZ, eigenplus[2]); // vector
     return LXe_OK;
 }
 
@@ -563,7 +562,7 @@ aaOceanChanModPackage::pkg_SetupChannels (
         ILxUnknownID		 addChan)
 {
         CLxUser_AddChannel	 ac (addChan);
-        LXtVector            displacement, normals, eigenplus, eigenminus;
+        LXtVector            displacement, eigenplus, eigenminus;
 
         // Order here is not so important since we look up by name and set indices later. Yay for freedom!
 
@@ -612,8 +611,8 @@ aaOceanChanModPackage::pkg_SetupChannels (
         ac.NewChannel  ("waveSize",	LXsTYPE_FLOAT);
         ac.SetDefault  (4.0f, 0);
         
-        ac.NewChannel  ("seed",	LXsTYPE_FLOAT);
-        ac.SetDefault  (1.0f, 0);
+        ac.NewChannel  ("seed",	LXsTYPE_INTEGER);
+        ac.SetDefault  (1.0, 0);
         
         ac.NewChannel  ("repeatTime",	LXsTYPE_FLOAT);
         ac.SetDefault  (1000.0f, 0);

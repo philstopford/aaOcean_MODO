@@ -78,9 +78,6 @@ class aaOceanChanMod
         unsigned m_idx_displacementY;
         unsigned m_idx_displacementZ;
         unsigned m_idx_foam;
-        unsigned m_idx_chopX;
-        unsigned m_idx_chopY;
-        unsigned m_idx_chopZ;
         unsigned m_idx_eigenplusX;
         unsigned m_idx_eigenplusY;
         unsigned m_idx_eigenplusZ;
@@ -112,9 +109,6 @@ class aaOceanChanMod
         unsigned cm_idx_displacementY;
         unsigned cm_idx_displacementZ;
         unsigned cm_idx_foam;
-        unsigned cm_idx_chopX;
-        unsigned cm_idx_chopY;
-        unsigned cm_idx_chopZ;
         unsigned cm_idx_eigenplusX;
         unsigned cm_idx_eigenplusY;
         unsigned cm_idx_eigenplusZ;
@@ -139,12 +133,12 @@ class aaOceanChanMod
                 float m_waveSpeed; // default is 1.0
                 float m_waveChop; // default is 2.0
                 float m_oceanDepth; // default is 10000
-                float m_seed; // default is 1.0
+                int m_seed; // default is 1.0
                 float m_repeatTime; // default is 1000.0
                 bool m_doFoam; // default is FALSE for now.
-                bool m_doNormals; // default is FALSE and hard-coded since compiler support is missing from library
-
+                bool m_doNormals; // default is FALSE
                 float m_time;
+
         };
 
 };

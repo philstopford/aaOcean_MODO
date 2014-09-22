@@ -131,34 +131,27 @@ bool isAligned(void* data, int alignment = 16)
 	return ((uintptr_t)data & (alignment-1)) == 0;
 }
 
-void* aligned_malloc(int size, int alignment = 16)
+void* aligned_malloc(unsigned int size, unsigned int alignment = 16)
 {
-#ifdef GCC_VERSION 
-	const int pointerSize = sizeof(void*);
-	const int requestedSize = size + alignment - 1 + pointerSize;
-	void* raw = malloc(requestedSize);
-	void* start = (char*)raw + pointerSize;
-	void* aligned = (void*)(((unsigned int)((char*)start+alignment-1)) & ~(alignment-1));
-	*(void**)((char*)aligned-pointerSize) = raw;
+#if defined(_MSC_VER)
+	// only supporting aligned malloc for windows for now
+	void* aligned =_aligned_malloc( size, alignment );
 	return aligned;
 #else
-	void* aligned =malloc( size );
-	return aligned;
+	void* mem =malloc( size );
+	return mem;
 #endif
 
 }
 
 void aligned_free(void* aligned)
 {
-#ifdef GCC_VERSION 
-	void* raw = *(void**)((char*)aligned-sizeof(void*));
-	free(raw);
+#if defined(_MSC_VER)
+	// only supporting aligned malloc for windows for now
+ 	_aligned_free(aligned);
 #else
-#ifdef _MSC_VER
 	free(aligned);
 #endif
-#endif
-
 }
 
 #if defined(_MSC_VER)

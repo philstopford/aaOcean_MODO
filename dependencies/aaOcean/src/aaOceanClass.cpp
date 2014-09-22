@@ -35,9 +35,6 @@
 #include "agnerFog/userintf.cpp"
 #include "aaOceanClass.h"
 
-// removed because of gcc-4 dependency
-// #include "vectorSSE.h"
-
 aaOcean::aaOcean() :
 	// input variables
     m_resolution(0),
@@ -79,6 +76,9 @@ aaOcean::aaOcean() :
 	m_doChop(0),
 	m_doFoam(0),
 	m_doNormals(0),
+
+	// memory tracking
+	m_memory(0),
 	
 	// fftw arrays
 	m_fft_htField(0),
@@ -90,7 +90,7 @@ aaOcean::aaOcean() :
 	m_normalsXY(0),
 	m_normalsZ(0)
 {
-	strcpy (m_state, "[aaOcean Core] Default initialized value");
+	strcpy (m_state, "");
 }
 
 aaOcean::aaOcean(const aaOcean &cpy)
@@ -210,6 +210,10 @@ void aaOcean::input(int resolution, ULONG seed, float oceanScale, float oceanDep
 		m_doHoK	= TRUE;
 		m_doSetup = TRUE;
 	}
+
+	if(!m_doHoK || !m_doSetup)
+		sprintf(m_state,"[aaOcean Core] Ocean base state unchanged. Re-evaluating ocean with cached data");
+
 	
 	// we have our inputs. start preparing ocean arrays
 	prepareOcean();
@@ -222,10 +226,9 @@ void aaOcean::reInit(int resolution)
 	if(m_resolution != resolution)
 	{
 		m_resolution = resolution;
-		allocateBaseArrays();				
+		allocateBaseArrays();			
 		m_doHoK  = TRUE;
 		m_doSetup = TRUE;
-		sprintf(m_state,"[aaOcean Core] Allocating ocean shader with dimensions %dx%d", resolution, resolution);
 	}
 }
 
@@ -248,14 +251,21 @@ void aaOcean::prepareOcean()
 			allocateFoamArrays();
 		evaluateJacobians();
 	}
+	sprintf(m_state,"%s\n[aaOcean Core] Working memory allocated: %.2f megabytes", m_state, float(m_memory)/1048576.f);
 }
 
 void aaOcean::allocateBaseArrays()
 {
 	if(m_isAllocated) 
+	{
+		sprintf(m_state,"[aaOcean Core] Reallocating memory for ocean data structures for resolution %dx%d", m_resolution, m_resolution);
 		clearArrays();
+	}
+	else
+		sprintf(m_state,"[aaOcean Core] Allocating memory for ocean data structures for resolution %dx%d", m_resolution, m_resolution);
 
 	int size = m_resolution * m_resolution;
+	m_memory = size * sizeof(int) * 2 + size * sizeof(float) * 9 + size * sizeof(fftwf_complex) * 3;
 
 	m_xCoord	= (int*)   aligned_malloc(size * sizeof(int)); 
 	m_zCoord	= (int*)   aligned_malloc(size * sizeof(int)); 
@@ -294,10 +304,11 @@ void aaOcean::allocateBaseArrays()
  void aaOcean::allocateFoamArrays()
 {
 	int size = m_resolution * m_resolution;
+	m_memory += size * sizeof(fftwf_complex) * 3;
 
-	m_fft_jxx			= (fftwf_complex*) fftwf_malloc(size * sizeof(fftwf_complex));
-	m_fft_jzz			= (fftwf_complex*) fftwf_malloc(size * sizeof(fftwf_complex)); 
-	m_fft_jxz			= (fftwf_complex*) fftwf_malloc(size * sizeof(fftwf_complex)); 
+	m_fft_jxx	= (fftwf_complex*) fftwf_malloc(size * sizeof(fftwf_complex));
+	m_fft_jzz	= (fftwf_complex*) fftwf_malloc(size * sizeof(fftwf_complex)); 
+	m_fft_jxz	= (fftwf_complex*) fftwf_malloc(size * sizeof(fftwf_complex)); 
 
 	m_planJxx = fftwf_plan_dft_2d(m_resolution, m_resolution, m_fft_jxx, m_fft_jxx, 1, FFTW_ESTIMATE);
 	m_planJxz = fftwf_plan_dft_2d(m_resolution, m_resolution, m_fft_jxz, m_fft_jxz, 1, FFTW_ESTIMATE);
@@ -308,6 +319,7 @@ void aaOcean::allocateBaseArrays()
 void aaOcean::allocateNormalArrays()
 {
 	int size = m_resolution * m_resolution;
+	m_memory += size * sizeof(fftwf_complex) * 2;
 
 	m_normalsXY = (fftwf_complex*) fftwf_malloc(size * sizeof(fftwf_complex));
 	m_normalsZ  = (fftwf_complex*) fftwf_malloc(size * sizeof(fftwf_complex));
@@ -317,11 +329,16 @@ void aaOcean::allocateNormalArrays()
 
 void aaOcean::clearResidualArrays()
 {
+	bool isResidualAllocated = TRUE;
+
 	if(m_rand2)
 	{
 		aligned_free(m_rand2); 
 		m_rand2 = FALSE;
 	}
+	else
+		isResidualAllocated = FALSE;
+
 	if(m_rand1)
 	{
 		aligned_free(m_rand1); 
@@ -372,12 +389,21 @@ void aaOcean::clearResidualArrays()
 		aligned_free(m_xCoord); 
 		m_xCoord = FALSE;
 	}
+
+	if(isResidualAllocated)
+	{
+		int size = m_resolution * m_resolution;
+		float cleared_memory = float(m_memory);
+		m_memory = m_memory - (size * sizeof(float) * 9 + size * sizeof(int) * 2);
+		cleared_memory = (cleared_memory - float(m_memory)) / 1048576.f;
+		float working_memory = (float)m_memory/1048576.f;
+		sprintf(m_state,"%s\n[aaOcean Core] Clearing %.2f megabytes of working memory. Current usage %.2f megabytes", \
+			m_state, cleared_memory, working_memory);
+	}
 }
 
 void aaOcean::clearArrays()
 {
-    
-    bool useDestroy = true; // added to control fftw destroy_plan behavior in this routine.
 	if(m_isAllocated)
 	{
 		if(m_isNormalAllocated)
@@ -391,22 +417,19 @@ void aaOcean::clearArrays()
 		{
 			if(m_fft_jxx)
 			{
-                if (useDestroy)
-                    fftwf_destroy_plan(m_planJxx);
+				fftwf_destroy_plan(m_planJxx);
 				fftwf_free(m_fft_jxx); 
 				m_fft_jxx = FALSE;
 			}
 			if(m_fft_jzz)
 			{
-                if (useDestroy)
-                    fftwf_destroy_plan(m_planJzz);
+				fftwf_destroy_plan(m_planJzz);
 				fftwf_free(m_fft_jzz);  
 				m_fft_jzz = FALSE;
 			}
 			if(m_fft_jxz)
 			{
-                if (useDestroy)
-                    fftwf_destroy_plan(m_planJxz);
+				fftwf_destroy_plan(m_planJxz);
 				fftwf_free(m_fft_jxz); 
 				m_fft_jxz = FALSE;
 			}
@@ -414,22 +437,19 @@ void aaOcean::clearArrays()
 		}
 		if(m_fft_chopZ)
 		{
-            if (useDestroy)
-                fftwf_destroy_plan(m_planChopZ);
+			fftwf_destroy_plan(m_planChopZ);
 			fftwf_free(m_fft_chopZ); 
 			m_fft_chopZ = FALSE;
 		}
 		if(m_fft_chopX)
 		{
-            if (useDestroy)
-                fftwf_destroy_plan(m_planChopX);
+			fftwf_destroy_plan(m_planChopX);
 			fftwf_free(m_fft_chopX); 
 			m_fft_chopX = FALSE;
 		}
 		if(m_fft_htField)
 		{
-            if (useDestroy)
-                fftwf_destroy_plan(m_planHeightField);
+			fftwf_destroy_plan(m_planHeightField);
 			fftwf_free(m_fft_htField); 
 			m_fft_htField = FALSE;
 		}
@@ -556,6 +576,8 @@ void aaOcean::setupGrid()
 		m_hokReal[index] = (aa_INV_SQRTTWO) * (m_rand1[index]) * philips;
 		m_hokImag[index] = (aa_INV_SQRTTWO) * (m_rand2[index]) * philips;
 	}
+
+	sprintf(m_state,"%s\n[aaOcean Core] Finished initializing all ocean data", m_state);
 	m_doHoK = FALSE;
 }
 
@@ -605,7 +627,7 @@ void aaOcean::setupGrid()
  void aaOcean::evaluateChopField()
 {
 	int  i, j, index;
-	 float  kX, kZ, kMag;
+	float  kX, kZ, kMag;
 	int n = m_resolution * m_resolution;
 	const float signs[2] = { 1.0f, -1.0f };
 	float multiplier;
@@ -889,10 +911,10 @@ float aaOcean::getOceanData(float uCoord, float vCoord, aaOcean::arrayType type)
 	xPlus1	= wrap(x + 1) * m_resolution;
 	xPlus2	= wrap(x + 2) * m_resolution;
 	x		= wrap(x)	* m_resolution;
+	y       = wrap(y);
 	yMinus1 = wrap(y - 1);
 	yPlus1	= wrap(y + 1);
 	yPlus2	= wrap(y + 2);
-    y       = wrap(y);
 	
 	// get the pointer to the aaOcean array that we want to pull data from
 	getArrayType(type, arrayPointer, arrayIndex);
@@ -971,27 +993,8 @@ inline float aaOcean::catmullRom(const float t, const float a, const float b, co
 
 inline int aaOcean::wrap(int x) const
 {
-	// return if we are trying to wrap an index that
-	// does not need wrapping
-	if(x >= 0 && x < m_resolution)
-		return x;
-
-	// m_resolution is always a power of two
-	// using a fast method for computing modulo of power-of-two numbers
-    // http://en.wikipedia.org/wiki/Power_of_two#Fast_algorithm_to_find_a_number_modulo_a_power_of_two
-    
-    // x = x & m_resolution - 1 will always yield a value >= 0 and < m_resolution
-    // because m_resolution is never negative, zero or 1.
+	// fast modulo for power of 2 numbers
 	x = x & (m_resolution - 1);
-
-    // As such, these checks are pointless, so let's disable them.
-    /*
-	if(x < 0)
-		x = m_resolution + x;
-	
-	if(x> (m_resolution - 1))
-		int x = 1;
-    */
 	return x;
 }
 
