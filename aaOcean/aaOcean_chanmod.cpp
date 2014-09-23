@@ -4,6 +4,8 @@
 
 #include <string>
 
+// #include "debugMe.h"
+
 using namespace aaOceanChanModNameSpace;
 
 aaOceanChanMod::aaOceanChanMod ()
@@ -385,6 +387,9 @@ aaOceanChanMod::cmod_Evaluate (
     CLxUser_Attributes	 at (attr);
     OceanData		*od = new OceanData;
     
+    // debug log instance
+    // plugin_debug debug;
+    
     // Variables used to handle returned values from chanMod.ReadInput* methods.
     double dTemp; // used for 'ReadFloat' where modo's SDK returns a double.
     int iTemp;
@@ -438,6 +443,10 @@ aaOceanChanMod::cmod_Evaluate (
 
     chanMod.ReadInputFloat (attr, cm_idx_waveSpeed, &dTemp);
     od->m_waveSpeed = (float) dTemp;
+    if(od->m_waveSpeed <= 0)
+    {
+        od->m_waveSpeed = 0.01; // safety value.
+    }
 
     chanMod.ReadInputFloat (attr, cm_idx_waveChop, &dTemp);
     od->m_waveChop = (float) dTemp;
@@ -511,7 +520,7 @@ aaOceanChanMod::cmod_Evaluate (
         eigenplus[0] = eigenplus[1] = eigenplus[2] = 0.0f;
     }
     
-    mwnormalize(result);
+    // mwnormalize(result);
 
     chanMod.WriteOutputFloat (attr, cm_idx_displacementX, (result[0]+1)/2); // vector, normalize to 0-1, 0.5 is no displacement
     chanMod.WriteOutputFloat (attr, cm_idx_displacementY, (result[1]+1)/2); // vector, normalize to 0-1, 0.5 is no displacement
