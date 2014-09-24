@@ -119,8 +119,6 @@ class aaOceanChanMod
         class OceanData {
             
             public:
-                float m_x;
-                float m_z;
                 int		m_resolution; // default is 2
                 float m_oceanSize; // default is 100.0
                 float m_waveHeight; // default is 2.0

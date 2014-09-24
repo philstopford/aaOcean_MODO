@@ -1,10 +1,10 @@
 #include "aaOcean_chanmod.h"
-
 #include <lx_plugin.hpp>
-
 #include <string>
+#include <fstream>
+#include <mutex>
 
-// #include "debugMe.h"
+std::mutex myMutex;
 
 using namespace aaOceanChanModNameSpace;
 
@@ -382,6 +382,7 @@ aaOceanChanMod::cmod_Evaluate (
         ILxUnknownID		 attr,		// ILxAttributesID
         void			*data)		
 {
+    myMutex.lock();
     CLxLoc_ChannelModifier	 chanMod (cmod);
 
     CLxUser_Attributes	 at (attr);
@@ -397,9 +398,9 @@ aaOceanChanMod::cmod_Evaluate (
     //	log.Info ("cmod_Evaluate Method");
     // ReadInputFloat() returns a double, so we use dTemp as an intermediate to cast to a float later in each case.
     chanMod.ReadInputFloat (attr, cm_idx_x, &dTemp);
-    od->m_x = (float) dTemp;
+    float m_x = (float) dTemp;
     chanMod.ReadInputFloat (attr, cm_idx_z, &dTemp);
-    od->m_z = (float) dTemp;
+    float m_z = (float) dTemp;
 
     chanMod.ReadInputInt (attr, cm_idx_resolution, &iTemp);
     od->m_resolution = iTemp;
@@ -420,8 +421,8 @@ aaOceanChanMod::cmod_Evaluate (
     }
 
     // Let's scale our values - experiment.
-    od->m_x = od->m_x/od->m_oceanSize;
-    od->m_z = od->m_z/od->m_oceanSize;
+    m_x = m_x/od->m_oceanSize;
+    m_z = m_z/od->m_oceanSize;
     
     chanMod.ReadInputFloat (attr, cm_idx_waveHeight, &dTemp);
     od->m_waveHeight = (float) dTemp;
@@ -493,22 +494,23 @@ aaOceanChanMod::cmod_Evaluate (
                     od->m_doNormals);
 
     float result[3];
+    result[0] = result[1] = result[2] = 0.0;
     float foam, eigenminus[3], eigenplus[3];
     bool foamy = false;
     
-    result[1] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eHEIGHTFIELD);
+    result[1] = m_ocean->getOceanData(m_x, m_z, aaOcean::eHEIGHTFIELD);
     if (m_ocean->isChoppy())
     {
-        result[0] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eCHOPX);
-        result[2] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eCHOPZ);
+        result[0] = m_ocean->getOceanData(m_x, m_z, aaOcean::eCHOPX);
+        result[2] = m_ocean->getOceanData(m_x, m_z, aaOcean::eCHOPZ);
         if(od->m_doFoam)
         {
             foamy = true;
-            foam = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eFOAM);
-            eigenminus[0] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eEIGENMINUSX);
-            eigenminus[2] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eEIGENMINUSZ);
-            eigenplus[0] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eEIGENPLUSX);
-            eigenplus[2] = m_ocean->getOceanData(od->m_x, od->m_z, aaOcean::eEIGENPLUSZ);
+            foam = m_ocean->getOceanData(m_x, m_z, aaOcean::eFOAM);
+            eigenminus[0] = m_ocean->getOceanData(m_x, m_z, aaOcean::eEIGENMINUSX);
+            eigenminus[2] = m_ocean->getOceanData(m_x, m_z, aaOcean::eEIGENMINUSZ);
+            eigenplus[0] = m_ocean->getOceanData(m_x, m_z, aaOcean::eEIGENPLUSX);
+            eigenplus[2] = m_ocean->getOceanData(m_x, m_z, aaOcean::eEIGENPLUSZ);
         }
     } else {
         result[0] = result[2] = 0.0f;
@@ -532,6 +534,18 @@ aaOceanChanMod::cmod_Evaluate (
     chanMod.WriteOutputFloat (attr, cm_idx_eigenplusX, eigenplus[0]); // vector
     chanMod.WriteOutputFloat (attr, cm_idx_eigenplusY, eigenplus[1]); // vector
     chanMod.WriteOutputFloat (attr, cm_idx_eigenplusZ, eigenplus[2]); // vector
+    
+    bool debugMe = false;
+    if (debugMe)
+    {
+        std::ofstream fout ("/Users/phil/aadebug_chanmod.csv", std::ios::app);
+        std::string tmpString =
+        std::to_string(m_x) + "," + std::to_string(m_z) + "," +
+        std::to_string((result[0]+1)/2) + "," + std::to_string((result[1]+1)/2) + "," + std::to_string((result[2]+1)/2) + "\n";
+        fout << tmpString;
+        fout.close();
+    }
+    myMutex.unlock();
     return LXe_OK;
 }
 
