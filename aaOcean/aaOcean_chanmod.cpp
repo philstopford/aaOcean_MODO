@@ -3,6 +3,7 @@
 #include <string>
 #include <fstream>
 #include <mutex>
+#include <memory>
 
 std::mutex myMutex;
 

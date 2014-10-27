@@ -7,9 +7,9 @@
 #include <lxlog.h>
 #include <lxu_log.hpp>
 #include <lx_chanmod.hpp>
-
+#include <memory>
 #include <iostream>
-
+#include <mutex>
 #include "aaOceanClass.h"
 
 namespace aaOceanChanModNameSpace {
