@@ -10,15 +10,10 @@ using namespace aaOceanChanModNameSpace;
 
 aaOceanChanMod::aaOceanChanMod ()
 {
-    m_ocean = NULL;
 }
 
 aaOceanChanMod::~aaOceanChanMod ()
 {
-    if (m_ocean != NULL)
-    {
-        delete m_ocean;
-    }
 }
 
 
@@ -101,6 +96,12 @@ aaOceanChanMod::cmod_Allocate (
         cm_idx_waveHeight = index;
         index++;
 
+        // Lookup the index of the 'waveSize' channel and add as an input.
+        modItem.ChannelLookup ("waveSize", &m_idx_waveSize);
+        chanMod.AddInput (item, m_idx_waveSize);
+        cm_idx_waveSize = index;
+        index++;
+    
         // Lookup the index of the 'surfaceTension' channel and add as an input.
         modItem.ChannelLookup ("surfaceTension", &m_idx_surfaceTension);
         chanMod.AddInput (item, m_idx_surfaceTension);
@@ -263,6 +264,11 @@ aaOceanChanMod::cmod_Flags (
                 return LXfCHMOD_INPUT;
         }
 
+        if (LXx_OK (modItem.ChannelLookup ("waveSize", &chanIdx))) {
+            if (index == chanIdx)
+                return LXfCHMOD_INPUT;
+        }
+
         if (LXx_OK (modItem.ChannelLookup ("surfaceTension", &chanIdx))) {
             if (index == chanIdx)
                 return LXfCHMOD_INPUT;
@@ -380,16 +386,12 @@ inline void mwnormalize(float *vec)
 aaOceanChanMod::cmod_Evaluate (
         ILxUnknownID		 cmod,		// ILxChannelModifierID
         ILxUnknownID		 attr,		// ILxAttributesID
-        void			*data)		
+        void			*data)
 {
-    myMutex.lock();
     CLxLoc_ChannelModifier	 chanMod (cmod);
 
     CLxUser_Attributes	 at (attr);
-    OceanData		*od = new OceanData;
-    
-    // debug log instance
-    // plugin_debug debug;
+    std::unique_ptr<OceanData> newOceanData(new OceanData());
     
     // Variables used to handle returned values from chanMod.ReadInput* methods.
     double dTemp; // used for 'ReadFloat' where modo's SDK returns a double.
@@ -403,117 +405,98 @@ aaOceanChanMod::cmod_Evaluate (
     float m_z = (float) dTemp;
 
     chanMod.ReadInputInt (attr, cm_idx_resolution, &iTemp);
-    od->m_resolution = iTemp;
-	if(od->m_resolution > 14)
+    newOceanData->m_resolution = iTemp;
+	if(newOceanData->m_resolution > 14)
     {
-        od->m_resolution = 14;
+        newOceanData->m_resolution = 14;
     }
-	if(od->m_resolution < 4)
+	if(newOceanData->m_resolution < 4)
     {
-        od->m_resolution = 4;
+        newOceanData->m_resolution = 4;
     }
 
     chanMod.ReadInputFloat (attr, cm_idx_oceanSize, &dTemp);
-    od->m_oceanSize = (float) dTemp;
-    if(od->m_oceanSize <= 0)
+    newOceanData->m_oceanSize = (float) dTemp;
+    if(newOceanData->m_oceanSize <= 0)
     {
-        od->m_oceanSize = 0.01; // safety value.
+        newOceanData->m_oceanSize = 0.01; // safety value.
     }
 
     // Let's scale our values - experiment.
-    m_x = m_x/od->m_oceanSize;
-    m_z = m_z/od->m_oceanSize;
+    m_x = m_x/newOceanData->m_oceanSize;
+    m_z = m_z/newOceanData->m_oceanSize;
     
     chanMod.ReadInputFloat (attr, cm_idx_waveHeight, &dTemp);
-    od->m_waveHeight = (float) dTemp;
+    newOceanData->m_waveHeight = (float) dTemp;
+
+    chanMod.ReadInputFloat (attr, cm_idx_waveSize, &dTemp);
+    newOceanData->m_waveSize = (float) dTemp;
 
     chanMod.ReadInputFloat (attr, cm_idx_surfaceTension, &dTemp);
-    od->m_surfaceTension = (float) dTemp;
+    newOceanData->m_surfaceTension = (float) dTemp;
 
     chanMod.ReadInputInt (attr, cm_idx_waveAlign, &iTemp);
-    od->m_waveAlign = (int) iTemp;
+    newOceanData->m_waveAlign = (int) iTemp;
 
     chanMod.ReadInputFloat (attr, cm_idx_waveSmooth, &dTemp);
-    od->m_waveSmooth = (float) dTemp;
+    newOceanData->m_waveSmooth = (float) dTemp;
 
     chanMod.ReadInputFloat (attr, cm_idx_waveDirection, &dTemp);
-    od->m_waveDirection = (float) dTemp;
+    newOceanData->m_waveDirection = (float) dTemp;
 
     chanMod.ReadInputFloat (attr, cm_idx_waveReflection, &dTemp);
-    od->m_waveReflection = (float) dTemp;
+    newOceanData->m_waveReflection = (float) dTemp;
 
     chanMod.ReadInputFloat (attr, cm_idx_waveSpeed, &dTemp);
-    od->m_waveSpeed = (float) dTemp;
-    if(od->m_waveSpeed <= 0)
+    newOceanData->m_waveSpeed = (float) dTemp;
+    if(newOceanData->m_waveSpeed <= 0)
     {
-        od->m_waveSpeed = 0.01; // safety value.
+        newOceanData->m_waveSpeed = 0.01; // safety value.
     }
 
     chanMod.ReadInputFloat (attr, cm_idx_waveChop, &dTemp);
-    od->m_waveChop = (float) dTemp;
+    newOceanData->m_waveChop = (float) dTemp;
 
     chanMod.ReadInputFloat (attr, cm_idx_oceanDepth, &dTemp);
-    od->m_oceanDepth = (float) dTemp;
+    newOceanData->m_oceanDepth = (float) dTemp;
 
     chanMod.ReadInputInt (attr, cm_idx_seed, &iTemp);
-    od->m_seed = iTemp;
+    newOceanData->m_seed = iTemp;
 
     chanMod.ReadInputFloat (attr, cm_idx_repeatTime, &dTemp);
-    od->m_repeatTime = (float) dTemp;
+    newOceanData->m_repeatTime = (float) dTemp;
 
     chanMod.ReadInputInt (attr, cm_idx_doFoam, &iTemp);
-    od->m_doFoam = (bool) iTemp;
+    newOceanData->m_doFoam = (bool) iTemp;
 
-    od->m_doNormals = false;
+    newOceanData->m_doNormals = false;
 
     chanMod.ReadInputFloat (attr, cm_idx_time, &dTemp);
-    od->m_time = (float) dTemp;
+    newOceanData->m_time = (float) dTemp;
 
-    if(m_ocean == NULL)
-    {
-        m_ocean = new aaOcean();
-    }
+    maybeResetOceanData(std::move(newOceanData)); // newOceanData is now invalid, do not use it again in this function!
     
-    // We scale the height because aaOcean scales it down again internally.
-    m_ocean->input(	od->m_resolution,
-                    (unsigned long)od->m_seed,
-                    od->m_oceanSize,
-                    od->m_oceanDepth,
-                    od->m_surfaceTension,
-                    od->m_waveSize,
-                    od->m_waveSmooth,
-                    od->m_waveDirection,
-                    od->m_waveAlign,
-                    od->m_waveReflection,
-                    od->m_waveSpeed,
-                    od->m_waveHeight * 100,
-                    od->m_waveChop,
-                    od->m_time,
-                    od->m_repeatTime,
-                    od->m_doFoam,
-                    od->m_doNormals);
-
     float result[3];
-    result[0] = result[1] = result[2] = 0.0;
     float foam, eigenminus[3], eigenplus[3];
     bool foamy = false;
     
-    result[1] = m_ocean->getOceanData(m_x, m_z, aaOcean::eHEIGHTFIELD);
-    if (m_ocean->isChoppy())
+    result[1] = ((mOcean_.getOceanData(m_x, m_z, aaOcean::eHEIGHTFIELD)) + 1.0f)/2.0f;
+    if (mOcean_.isChoppy())
     {
-        result[0] = m_ocean->getOceanData(m_x, m_z, aaOcean::eCHOPX);
-        result[2] = m_ocean->getOceanData(m_x, m_z, aaOcean::eCHOPZ);
-        if(od->m_doFoam)
+        result[0] = ((mOcean_.getOceanData(m_x, m_z, aaOcean::eCHOPX)) + 1.0f)/2.0f;
+        result[2] = ((mOcean_.getOceanData(m_x, m_z, aaOcean::eCHOPZ)) + 1.0f)/2.0f;
+        if(oceanData_->m_doFoam)
         {
             foamy = true;
-            foam = m_ocean->getOceanData(m_x, m_z, aaOcean::eFOAM);
-            eigenminus[0] = m_ocean->getOceanData(m_x, m_z, aaOcean::eEIGENMINUSX);
-            eigenminus[2] = m_ocean->getOceanData(m_x, m_z, aaOcean::eEIGENMINUSZ);
-            eigenplus[0] = m_ocean->getOceanData(m_x, m_z, aaOcean::eEIGENPLUSX);
-            eigenplus[2] = m_ocean->getOceanData(m_x, m_z, aaOcean::eEIGENPLUSZ);
+            foam = mOcean_.getOceanData(m_x, m_z, aaOcean::eFOAM);
+            eigenminus[0] = mOcean_.getOceanData(m_x, m_z, aaOcean::eEIGENMINUSX);
+            eigenminus[2] = mOcean_.getOceanData(m_x, m_z, aaOcean::eEIGENMINUSZ);
+            eigenplus[0] = mOcean_.getOceanData(m_x, m_z, aaOcean::eEIGENPLUSX);
+            eigenplus[2] = mOcean_.getOceanData(m_x, m_z, aaOcean::eEIGENPLUSZ);
         }
     } else {
-        result[0] = result[2] = 0.0f;
+        result[0] = 0.0f;
+        result[2] = 0.0f;
     }
     if (foamy == false)
     {
@@ -524,9 +507,9 @@ aaOceanChanMod::cmod_Evaluate (
     
     // mwnormalize(result);
 
-    chanMod.WriteOutputFloat (attr, cm_idx_displacementX, (result[0]+1)/2); // vector, normalize to 0-1, 0.5 is no displacement
-    chanMod.WriteOutputFloat (attr, cm_idx_displacementY, (result[1]+1)/2); // vector, normalize to 0-1, 0.5 is no displacement
-    chanMod.WriteOutputFloat (attr, cm_idx_displacementZ, (result[2]+1)/2); // vector, normalize to 0-1, 0.5 is no displacement
+    chanMod.WriteOutputFloat (attr, cm_idx_displacementX, result[0]); // vector, normalize to 0-1, 0.5 is no displacement
+    chanMod.WriteOutputFloat (attr, cm_idx_displacementY, result[1]); // vector, normalize to 0-1, 0.5 is no displacement
+    chanMod.WriteOutputFloat (attr, cm_idx_displacementZ, result[2]); // vector, normalize to 0-1, 0.5 is no displacement
     chanMod.WriteOutputFloat (attr, cm_idx_foam, foam);
     chanMod.WriteOutputFloat (attr, cm_idx_eigenminusX, eigenminus[0]); // vector
     chanMod.WriteOutputFloat (attr, cm_idx_eigenminusY, eigenminus[1]); // vector
@@ -535,20 +518,36 @@ aaOceanChanMod::cmod_Evaluate (
     chanMod.WriteOutputFloat (attr, cm_idx_eigenplusY, eigenplus[1]); // vector
     chanMod.WriteOutputFloat (attr, cm_idx_eigenplusZ, eigenplus[2]); // vector
     
-    bool debugMe = false;
-    if (debugMe)
-    {
-        std::ofstream fout ("/Users/phil/aadebug_chanmod.csv", std::ios::app);
-        std::string tmpString =
-        std::to_string(m_x) + "," + std::to_string(m_z) + "," +
-        std::to_string((result[0]+1)/2) + "," + std::to_string((result[1]+1)/2) + "," + std::to_string((result[2]+1)/2) + "\n";
-        fout << tmpString;
-        fout.close();
-    }
-    myMutex.unlock();
     return LXe_OK;
 }
 
+void aaOceanChanMod::maybeResetOceanData(std::unique_ptr<OceanData> newOceanData) {
+    if (oceanData_.get() == nullptr || *newOceanData != *oceanData_) {
+        // Automatically unlocks the mutex when it goes out of scope.
+        std::lock_guard<std::mutex> lock(myMutex_);
+        // Check it again inside the mutex because another thread may have overridden it.
+        if (oceanData_.get() == nullptr || *newOceanData != *oceanData_) {
+            oceanData_ = std::move(newOceanData); // newOceanData is no longer valid, do not use it again in this function!
+            mOcean_.input(	oceanData_->m_resolution,
+                           (unsigned long)oceanData_->m_seed,
+                           oceanData_->m_oceanSize,
+                           oceanData_->m_oceanDepth,
+                           oceanData_->m_surfaceTension,
+                           oceanData_->m_waveSize,
+                           oceanData_->m_waveSmooth,
+                           oceanData_->m_waveDirection,
+                           oceanData_->m_waveAlign,
+                           oceanData_->m_waveReflection,
+                           oceanData_->m_waveSpeed,
+                           oceanData_->m_waveHeight * 100,
+                           oceanData_->m_waveChop,
+                           oceanData_->m_time,
+                           oceanData_->m_repeatTime,
+                           oceanData_->m_doFoam,
+                           oceanData_->m_doNormals);
+        }
+    }
+}
 // Package class
 
 LXtTagInfoDesc	 aaOceanChanModPackage::descInfo[] = {
@@ -606,7 +605,7 @@ aaOceanChanModPackage::pkg_SetupChannels (
         
         ac.NewChannel  ("waveHeight",	LXsTYPE_FLOAT);
         ac.SetDefault  (1.0f, 0);
-        
+    
         ac.NewChannel  ("surfaceTension",	LXsTYPE_FLOAT);
         ac.SetDefault  (0.0f, 0);
         
@@ -635,7 +634,7 @@ aaOceanChanModPackage::pkg_SetupChannels (
         ac.SetDefault  (4.0f, 0);
         
         ac.NewChannel  ("seed",	LXsTYPE_INTEGER);
-        ac.SetDefault  (1.0, 0);
+        ac.SetDefault  (0.0f, 1);
         
         ac.NewChannel  ("repeatTime",	LXsTYPE_FLOAT);
         ac.SetDefault  (1000.0f, 0);

@@ -9,6 +9,7 @@
 #define AAOCEANCLASS_H
 
 #include "fftw3.h"
+#include <iostream>
 
 class aaOcean
 { 
@@ -50,6 +51,7 @@ public:
 				bool	doFoam,
 				bool	doNormals);
 
+    void getAllOceanData(float uCoord, float vCoord, float result[3], float& foam, float eigenminus[3], float eigenplus[3]);
 	float getOceanData(float uCoord, float vCoord, aaOcean::arrayType type) const;
 	void getOceanArray(float *&outArray, aaOcean::arrayType type);
 	void clearResidualArrays();

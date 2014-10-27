@@ -35,6 +35,8 @@
 #include "agnerFog/userintf.cpp"
 #include "aaOceanClass.h"
 
+#include <fstream>
+
 aaOcean::aaOcean() :
 	// input variables
     m_resolution(0),
@@ -534,7 +536,7 @@ void aaOcean::setupGrid()
 	 const float	windx	 = cos(m_windDir);
 	 const float	windz	 = sin(m_windDir);
 	 const float	omega0	 = aa_TWOPI / m_loopTime;
-	
+
 	bool bDamp	= FALSE;
 	if (m_damp > 0.0f)
 		bDamp = true;
@@ -552,11 +554,11 @@ void aaOcean::setupGrid()
 		k_dot_w		= (x * k_mag) * windx + (z * k_mag) * windz;
 
 		// calculate philips spectrum
-		philips		= sqrt((( exp(-1.0f / ( L_sq * k_sq)) * pow(k_dot_w, m_windAlign)) / 
+        philips		= sqrt((( exp(-1.0f / ( L_sq * k_sq)) * pow(k_dot_w, m_windAlign)) /
 					  (k_sq * k_sq)) * exp(-k_sq * m_cutoff));
+ 		// reduce reflected waves
 
-		// reduce reflected waves
-		if(bDamp)
+        if(bDamp)
 		{
 			if(k_dot_w < 0.0f)
 				philips *= (1.0f - m_damp);
@@ -575,7 +577,7 @@ void aaOcean::setupGrid()
 
 		m_hokReal[index] = (aa_INV_SQRTTWO) * (m_rand1[index]) * philips;
 		m_hokImag[index] = (aa_INV_SQRTTWO) * (m_rand2[index]) * philips;
-	}
+    }
 
 	sprintf(m_state,"%s\n[aaOcean Core] Finished initializing all ocean data", m_state);
 	m_doHoK = FALSE;
@@ -878,6 +880,28 @@ void aaOcean::getOceanArray(float *&outArray, aaOcean::arrayType type)
 	}
 }
 
+void aaOcean::getAllOceanData(float uCoord, float vCoord, float result[3], float& foam, float eigenminus[3], float eigenplus[3])
+{
+    foam = 0.0f;
+    result[0] = result[2] = 0.0f;
+    eigenminus[0] = eigenminus[1] = eigenminus[2] = 0.0f;
+    eigenplus[0] = eigenplus[1] = eigenplus[2] = 0.0f;
+    result[1] = getOceanData(uCoord,vCoord,eHEIGHTFIELD);
+    if (isChoppy())
+    {
+        result[0] = getOceanData(uCoord,vCoord,eCHOPX);
+        result[2] = getOceanData(uCoord,vCoord,eCHOPZ);
+        if (m_doFoam)
+        {
+            foam = getOceanData(uCoord, vCoord, eFOAM);
+            eigenminus[0] = getOceanData(uCoord, vCoord, eEIGENMINUSX);
+            eigenminus[2] = getOceanData(uCoord, vCoord, eEIGENMINUSZ);
+            eigenplus[0] = getOceanData(uCoord, vCoord, eEIGENPLUSX);
+            eigenplus[2] = getOceanData(uCoord, vCoord, eEIGENPLUSZ);
+        }
+    }
+}
+
 float aaOcean::getOceanData(float uCoord, float vCoord, aaOcean::arrayType type) const
 {
 	float u, v, du, dv = 0;
@@ -951,6 +975,8 @@ float aaOcean::getOceanData(float uCoord, float vCoord, aaOcean::arrayType type)
 	assert(x			+ yPlus2 < m_resolution * m_resolution);
 	assert(xPlus1		+ yPlus2 < m_resolution * m_resolution);
 	assert(xPlus2		+ yPlus2 < m_resolution * m_resolution);
+    assert(arrayIndex >= 0);
+
 
 	// prepare for catmul-rom interpolation
 	const float a1 = catmullRom(du, 
@@ -959,7 +985,7 @@ float aaOcean::getOceanData(float uCoord, float vCoord, aaOcean::arrayType type)
 							arrayPointer[xPlus1		+ yMinus1][arrayIndex],
 							arrayPointer[xPlus2		+ yMinus1][arrayIndex]);
 
-	const float b1 = catmullRom(du, 
+	const float b1 = catmullRom(du,
 							arrayPointer[xMinus1	+	y][arrayIndex],
 							arrayPointer[x			+	y][arrayIndex],
 							arrayPointer[xPlus1		+	y][arrayIndex],
@@ -977,7 +1003,9 @@ float aaOcean::getOceanData(float uCoord, float vCoord, aaOcean::arrayType type)
 							arrayPointer[xPlus1		+ yPlus2][arrayIndex],
 							arrayPointer[xPlus2		+ yPlus2][arrayIndex]);
 
-	return catmullRom(dv, a1, b1, c1, d1);
+    const float returnValue =  catmullRom(dv, a1, b1, c1, d1);
+
+    return returnValue;
 }
 
 inline float aaOcean::catmullRom(const float t, const float a, const float b, const float c, const float d) const
@@ -985,10 +1013,10 @@ inline float aaOcean::catmullRom(const float t, const float a, const float b, co
     
     // Where a, b, c, d are four points on the spline and t is the portion of the distance between the two control points b and c
     // a and d satisfy the need for two points on either side of the desired point on the spline
-    
-	return  0.5f * ( ( 2.0f * b ) + ( -a + c ) * t + 
-			( 2.0f * a - 5.0f * b + 4.0f * c - d ) * t * t + 
-			( -a + 3.0f * b - 3.0f * c + d )* t * t * t );
+    const float returnValue = 0.5f * ( ( 2.0f * b ) + ( -a + c ) * t +
+                                ( 2.0f * a - 5.0f * b + 4.0f * c - d ) * t * t +
+                                ( -a + 3.0f * b - 3.0f * c + d )* t * t * t );
+    return returnValue;
 }
 
 inline int aaOcean::wrap(int x) const
@@ -1034,5 +1062,7 @@ void aaOcean::getArrayType(aaOcean::arrayType type, fftwf_complex*& outArray, in
 	}
 	else if (type == eNORMALSZ)
 		outArray = m_normalsZ;
+    
+    assert(outArray != nullptr);
 }
 #endif  /* AAOCEANCLASS_CPP */

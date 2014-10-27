@@ -1,5 +1,6 @@
 #include "aaOcean_texture.h"
 #include <lxu_math.hpp>
+#include <fstream>
 
 using namespace aaOceanTextureNamespace;
 
@@ -221,32 +222,111 @@ LxResult aaOceanTexture::vtx_ReadChannels(ILxUnknownID attr, void  **ppvData)
 	rd->m_doNormals = false; // disabled due to Vector issues (bool) at.Int(m_idx_doNormals);
     
     rd->m_time = at.Float(m_idx_time);
-	
+    
 #ifdef TEXRENDDATA
-    rd->m_ocean->input( rd->m_resolution,
-                   (unsigned long)rd->m_seed,
-                   rd->m_oceanSize,
-                   rd->m_oceanDepth,
-                   rd->m_surfaceTension,
-                   rd->m_waveSize,
-                   rd->m_waveSmooth,
-                   rd->m_waveDirection,
-                   rd->m_waveAlign,
-                   rd->m_waveReflection,
-                   rd->m_waveSpeed,
-                   rd->m_waveHeight * 100,
-                   rd->m_waveChop,
-                   rd->m_time,
-                   rd->m_repeatTime,
-                   rd->m_doFoam,
-                   rd->m_doNormals);
+    if (rd->m_resolution != m_resolutionCache ||
+        rd->m_oceanSize != m_oceanSizeCache ||
+        rd->m_waveHeight != m_waveHeightCache ||
+        rd->m_waveSize != m_waveSizeCache ||
+        rd->m_surfaceTension != m_surfaceTensionCache ||
+        rd->m_waveAlign != m_waveAlignCache ||
+        rd->m_waveSmooth != m_waveSmoothCache ||
+        rd->m_waveDirection != m_waveDirectionCache ||
+        rd->m_waveReflection != m_waveReflectionCache ||
+        rd->m_waveSpeed != m_waveSpeedCache ||
+        rd->m_waveChop != m_waveChopCache ||
+        rd->m_oceanDepth != m_oceanDepthCache ||
+        rd->m_seed != m_seedCache ||
+        rd->m_repeatTime != m_repeatTimeCache ||
+        rd->m_doFoam != m_doFoamCache ||
+        rd->m_doNormals != m_doNormalsCache ||
+        rd->m_time != m_timeCache
+        )
+    {
+        rd->m_ocean = NULL;
+    }
+    if (rd->m_ocean == NULL)
+    {
+        m_resolutionCache = rd->m_resolution;
+        m_oceanSizeCache = rd->m_oceanSize;
+        m_waveHeightCache = rd->m_waveHeight;
+        m_waveSizeCache = rd->m_waveSize;
+        m_surfaceTensionCache = rd->m_surfaceTension;
+        m_waveAlignCache = rd->m_waveAlign;
+        m_waveSmoothCache = rd->m_waveSmooth;
+        m_waveDirectionCache = rd->m_waveDirection;
+        m_waveReflectionCache = rd->m_waveReflection;
+        m_waveSpeedCache = rd->m_waveSpeed;
+        m_waveChopCache = rd->m_waveChop;
+        m_oceanDepthCache = rd->m_oceanDepth;
+        m_seedCache = rd->m_seed;
+        m_repeatTimeCache = rd->m_repeatTime;
+        m_doFoamCache = rd->m_doFoam;
+        m_doNormalsCache = rd->m_doNormals;
+        m_timeCache = rd->m_time;
+        rd->m_ocean = new aaOcean();
+        rd->m_ocean->input(rd->m_resolution,
+                           (unsigned long)rd->m_seed,
+                           rd->m_oceanSize,
+                           rd->m_oceanDepth,
+                           rd->m_surfaceTension,
+                           rd->m_waveSize,
+                           rd->m_waveSmooth,
+                           rd->m_waveDirection,
+                           rd->m_waveAlign,
+                           rd->m_waveReflection,
+                           rd->m_waveSpeed,
+                           rd->m_waveHeight * 100,
+                           rd->m_waveChop,
+                           rd->m_time,
+                           rd->m_repeatTime,
+                           rd->m_doFoam,
+                           rd->m_doNormals);
+    }
 #else
+    if (rd->m_resolution != m_resolutionCache ||
+        rd->m_oceanSize != m_oceanSizeCache ||
+        rd->m_waveHeight != m_waveHeightCache ||
+        rd->m_waveSize != m_waveSizeCache ||
+        rd->m_surfaceTension != m_surfaceTensionCache ||
+        rd->m_waveAlign != m_waveAlignCache ||
+        rd->m_waveSmooth != m_waveSmoothCache ||
+        rd->m_waveDirection != m_waveDirectionCache ||
+        rd->m_waveReflection != m_waveReflectionCache ||
+        rd->m_waveSpeed != m_waveSpeedCache ||
+        rd->m_waveChop != m_waveChopCache ||
+        rd->m_oceanDepth != m_oceanDepthCache ||
+        rd->m_seed != m_seedCache ||
+        rd->m_repeatTime != m_repeatTimeCache ||
+        rd->m_doFoam != m_doFoamCache ||
+        rd->m_doNormals != m_doNormalsCache ||
+        rd->m_time != m_timeCache
+        )
+    {
+        m_ocean = NULL;
+    }
     if (m_ocean == NULL)
     {
+        m_resolutionCache = rd->m_resolution;
+        m_oceanSizeCache = rd->m_oceanSize;
+        m_waveHeightCache = rd->m_waveHeight;
+        m_waveSizeCache = rd->m_waveSize;
+        m_surfaceTensionCache = rd->m_surfaceTension;
+        m_waveAlignCache = rd->m_waveAlign;
+        m_waveSmoothCache = rd->m_waveSmooth;
+        m_waveDirectionCache = rd->m_waveDirection;
+        m_waveReflectionCache = rd->m_waveReflection;
+        m_waveSpeedCache = rd->m_waveSpeed;
+        m_waveChopCache = rd->m_waveChop;
+        m_oceanDepthCache = rd->m_oceanDepth;
+        m_seedCache = rd->m_seed;
+        m_repeatTimeCache = rd->m_repeatTime;
+        m_doFoamCache = rd->m_doFoam;
+        m_doNormalsCache = rd->m_doNormals;
+        m_timeCache = rd->m_time;
         m_ocean = new aaOcean();
-    }
-    // We scale the height because aaOcean scales it down again internally.
-    m_ocean->input( rd->m_resolution,
+        // We scale the height because aaOcean scales it down again internally.
+        m_ocean->input( rd->m_resolution,
                         (unsigned long)rd->m_seed,
                         rd->m_oceanSize,
                         rd->m_oceanDepth,
@@ -263,6 +343,7 @@ LxResult aaOceanTexture::vtx_ReadChannels(ILxUnknownID attr, void  **ppvData)
                         rd->m_repeatTime,
                         rd->m_doFoam,
                         rd->m_doNormals);
+    }
 #endif
 
 	ppvData[0] = rd;
@@ -302,7 +383,7 @@ void aaOceanTexture::vtx_Evaluate (ILxUnknownID etor, int *idx, ILxUnknownID vec
 
     tInp = (LXpTextureInput *) pkt_service.FastPacket (vector, tin_offset);
 	tInpDsp = (LXpDisplace *) pkt_service.FastPacket (vector, tinDsp_offset);
-
+    
     // Maya code for reference :
 	// get height field
     /*
@@ -438,7 +519,16 @@ void aaOceanTexture::vtx_Evaluate (ILxUnknownID etor, int *idx, ILxUnknownID vec
     }
     tOut->value[0] = value;
     tOut->alpha[0] = alpha;
-
+    bool debugMe = false;
+    if (debugMe)
+    {
+        std::ofstream fout ("/Users/phil/aadebug_texture.csv", std::ios::app);
+        std::string tmpString =
+        std::to_string(x_pos) + "," + std::to_string(z_pos) + "," +
+        std::to_string(result[0]) + "," + std::to_string(result[1]) + "," + std::to_string(result[2]) + "\n";
+        fout << tmpString;
+        fout.close();
+    }
 }
 
 /*

@@ -24,13 +24,74 @@ class aaOceanChanModLog : public CLxLuxologyLogMessage
 
 class aaOceanChanModPackage;
 
+class OceanData {
+        
+    public:
+        int		m_resolution; // default is 2
+        float m_oceanSize; // default is 100.0
+        float m_waveHeight; // default is 2.0
+        float m_waveSize; // default is 4.0
+        float m_surfaceTension; // default is 0.0
+        int m_waveAlign; // default is 1
+        float m_waveSmooth; // default is 0.0
+        float m_waveDirection; // default is 45.0
+        float m_waveReflection; // default is 0.0
+        float m_waveSpeed; // default is 1.0
+        float m_waveChop; // default is 2.0
+        float m_oceanDepth; // default is 10000
+        int m_seed; // default is 1.0
+        float m_repeatTime; // default is 1000.0
+        bool m_doFoam; // default is FALSE for now.
+        bool m_doNormals; // default is FALSE
+        float m_time;
+    
+        bool operator == (const OceanData &oceanData) const {
+            return (this->m_resolution == oceanData.m_resolution &&
+                    this->m_oceanSize == oceanData.m_oceanSize &&
+                    this->m_waveHeight == oceanData.m_waveHeight &&
+                    this->m_waveSize == oceanData.m_waveSize &&
+                    this->m_surfaceTension == oceanData.m_surfaceTension &&
+                    this->m_waveAlign == oceanData.m_waveAlign &&
+                    this->m_waveSmooth == oceanData.m_waveSmooth &&
+                    this->m_waveDirection == oceanData.m_waveDirection &&
+                    this->m_waveReflection == oceanData.m_waveReflection &&
+                    this->m_waveSpeed == oceanData.m_waveSpeed &&
+                    this->m_waveChop == oceanData.m_waveChop &&
+                    this->m_oceanDepth == oceanData.m_oceanDepth &&
+                    this->m_seed == oceanData.m_seed &&
+                    this->m_doFoam == oceanData.m_doFoam &&
+                    this->m_doNormals == oceanData.m_doNormals &&
+                    this->m_time == oceanData.m_time
+                    ); // Check all the other values.
+        }
+        
+        bool operator != (const OceanData &oceanData) const {
+            return !(*this == oceanData);
+        }
+        
+};
+    
 class aaOceanChanMod
         :
         public CLxImpl_PackageInstance,
         public CLxImpl_ChannelModItem
 {
         aaOceanChanModLog		 log;
+
+    private:
+        // This will reinitialize the ocean data and aaOcean object if the values have changed, or
+        // they haven't been initialized at all yet.
+        void maybeResetOceanData(std::unique_ptr<OceanData> newOceanData);
         
+        // A single oceanData for this object.
+        // We use a unique pointer because it guarantees that an uninitialized object will crash,
+        // and makes it easy to check for initialization without another variable.
+        // And we don't ever need to copy OceanData values, even when we've set them all.
+        std::unique_ptr<OceanData> oceanData_;
+        // A single aaOcean for this object.
+        aaOcean mOcean_;
+        // One Mutex per object.
+        std::mutex myMutex_;
     public:
     
         aaOceanChanModPackage	*src_pkg;
@@ -39,7 +100,6 @@ class aaOceanChanMod
         
         aaOceanChanMod ();
         ~aaOceanChanMod ();
-        aaOcean *m_ocean;
 
         LxResult		 pins_Initialize (ILxUnknownID item, ILxUnknownID super) LXx_OVERRIDE;
         void			 pins_Cleanup (void) LXx_OVERRIDE;
@@ -60,6 +120,7 @@ class aaOceanChanMod
         unsigned m_idx_resolution;
         unsigned m_idx_oceanSize;
         unsigned m_idx_waveHeight;
+        unsigned m_idx_waveSize;
         unsigned m_idx_surfaceTension;
         unsigned m_idx_waveAlign;
         unsigned m_idx_waveSmooth;
@@ -91,6 +152,7 @@ class aaOceanChanMod
         unsigned cm_idx_resolution;
         unsigned cm_idx_oceanSize;
         unsigned cm_idx_waveHeight;
+        unsigned cm_idx_waveSize;
         unsigned cm_idx_surfaceTension;
         unsigned cm_idx_waveAlign;
         unsigned cm_idx_waveSmooth;
@@ -115,29 +177,6 @@ class aaOceanChanMod
         unsigned cm_idx_eigenminusX;
         unsigned cm_idx_eigenminusY;
         unsigned cm_idx_eigenminusZ;
-
-        class OceanData {
-            
-            public:
-                int		m_resolution; // default is 2
-                float m_oceanSize; // default is 100.0
-                float m_waveHeight; // default is 2.0
-                float m_waveSize; // default is 4.0
-                float m_surfaceTension; // default is 0.0
-                int m_waveAlign; // default is 1
-                float m_waveSmooth; // default is 0.0
-                float m_waveDirection; // default is 45.0
-                float m_waveReflection; // default is 0.0
-                float m_waveSpeed; // default is 1.0
-                float m_waveChop; // default is 2.0
-                float m_oceanDepth; // default is 10000
-                int m_seed; // default is 1.0
-                float m_repeatTime; // default is 1000.0
-                bool m_doFoam; // default is FALSE for now.
-                bool m_doNormals; // default is FALSE
-                float m_time;
-
-        };
 
 };
 
