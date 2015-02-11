@@ -422,6 +422,7 @@
 				EXECUTABLE_PREFIX = lib;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					TEXRENDDATA,
 					MODO801,
 					"DEBUG=1",
 					"$(inherited)",
@@ -449,7 +450,10 @@
 				EXECUTABLE_EXTENSION = lx;
 				EXECUTABLE_PREFIX = lib;
 				GCC_OPTIMIZATION_LEVEL = s;
-				GCC_PREPROCESSOR_DEFINITIONS = MODO801;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					TEXRENDDATA,
+					MODO801,
+				);
 				HEADER_SEARCH_PATHS = (
 					"\"$(SRCROOT)/../LXSDK/include\"",
 					"\"$(SRCROOT)/dependencies/aaOcean/src\"",

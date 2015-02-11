@@ -18,6 +18,22 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="aaOcean\aaOcean_chanmod.h" />
+    <ClInclude Include="aaOcean\aaOcean_command.h" />
+    <ClInclude Include="aaOcean\aaOcean_deformer.h" />
+    <ClInclude Include="aaOcean\aaOcean_init.h" />
+    <ClInclude Include="aaOcean\aaOcean_texture.h" />
+    <ClInclude Include="dependencies\aaOcean\src\aaOceanClass.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="aaOcean\aaOcean_chanmod.cpp" />
+    <ClCompile Include="aaOcean\aaOcean_command.cpp" />
+    <ClCompile Include="aaOcean\aaOcean_deformer.cpp" />
+    <ClCompile Include="aaOcean\aaOcean_init.cpp" />
+    <ClCompile Include="aaOcean\aaOcean_texture.cpp" />
+    <ClCompile Include="dependencies\aaOcean\src\aaOceanClass.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{8CCF5321-661C-4792-A40D-664F3EB0391A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -129,34 +145,18 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>MODO801;WIN32;NDEBUG;_WINDOWS;_USRDLL;AAOCEAN_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\Phil\Documents\modo\aaOcean\dependencies\helpers;C:\Users\Phil\Documents\modo\LXSDK_73195\include;C:\Users\Phil\Documents\modo\aaOcean\dependencies\fftw\fftw-3.3.4\api;C:\Users\Phil\Documents\modo\aaOcean\dependencies\aaOcean\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>TEXRENDDATA;MODO801;WIN32;NDEBUG;_WINDOWS;_USRDLL;AAOCEAN_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\Phil\Documents\development\modo\aaOceanModo\dependencies\helpers;C:\Users\Phil\Documents\development\modo\LXSDK_77509_801\include;C:\Users\Phil\Documents\development\modo\aaOceanModo\dependencies\fftw\fftw-3.3.4\api;C:\Users\Phil\Documents\development\modo\aaOceanModo\dependencies\aaOcean\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>C:\Users\Phil\Documents\modo\aaOcean\aaOcean\x64\Release;C:\Users\Phil\Documents\modo\aaOcean\dependencies\lib\win64\fftw-3.3.4;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\Phil\Documents\development\modo\aaOceanModo\x64\Release;C:\Users\Phil\Documents\development\modo\aaOceanModo\dependencies\lib\win64\fftw-3.3.4;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>commonLib.lib;libfftw3l-3.lib;libfftw3f-3.lib;libfftw3-3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="..\dependencies\aaOcean\src\aaOceanClass.h" />
-    <ClInclude Include="aaOcean_chanmod.h" />
-    <ClInclude Include="aaOcean_command.h" />
-    <ClInclude Include="aaOcean_deformer.h" />
-    <ClInclude Include="aaOcean_init.h" />
-    <ClInclude Include="aaOcean_texture.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\dependencies\aaOcean\src\aaOceanClass.cpp" />
-    <ClCompile Include="aaOcean_chanmod.cpp" />
-    <ClCompile Include="aaOcean_command.cpp" />
-    <ClCompile Include="aaOcean_deformer.cpp" />
-    <ClCompile Include="aaOcean_init.cpp" />
-    <ClCompile Include="aaOcean_texture.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

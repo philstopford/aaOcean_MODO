@@ -31,7 +31,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "969"
             endingLineNumber = "969"
-            landmarkName = "aaOcean::getArrayType(aaOcean::arrayType type, fftwf_complex*&amp; outArray, int &amp;arrayIndex)"
+            landmarkName = "aaOcean::getOceanData(float uCoord, float vCoord, aaOcean::arrayType type)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -47,7 +47,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "971"
             endingLineNumber = "971"
-            landmarkName = "aaOcean::getArrayType(aaOcean::arrayType type, fftwf_complex*&amp; outArray, int &amp;arrayIndex)"
+            landmarkName = "aaOcean::getOceanData(float uCoord, float vCoord, aaOcean::arrayType type)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -63,7 +63,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "973"
             endingLineNumber = "973"
-            landmarkName = "aaOcean::getArrayType(aaOcean::arrayType type, fftwf_complex*&amp; outArray, int &amp;arrayIndex)"
+            landmarkName = "aaOcean::getOceanData(float uCoord, float vCoord, aaOcean::arrayType type)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -79,7 +79,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "975"
             endingLineNumber = "975"
-            landmarkName = "aaOcean::getArrayType(aaOcean::arrayType type, fftwf_complex*&amp; outArray, int &amp;arrayIndex)"
+            landmarkName = "aaOcean::getOceanData(float uCoord, float vCoord, aaOcean::arrayType type)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -95,7 +95,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "977"
             endingLineNumber = "977"
-            landmarkName = "aaOcean::getArrayType(aaOcean::arrayType type, fftwf_complex*&amp; outArray, int &amp;arrayIndex)"
+            landmarkName = "aaOcean::getOceanData(float uCoord, float vCoord, aaOcean::arrayType type)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -110,7 +110,9 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "288"
-            endingLineNumber = "288">
+            endingLineNumber = "288"
+            landmarkName = "aaOcean::allocateBaseArrays()"
+            landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -124,7 +126,9 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "249"
-            endingLineNumber = "249">
+            endingLineNumber = "249"
+            landmarkName = "aaOcean::prepareOcean()"
+            landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
