@@ -182,9 +182,9 @@ LxResult aaOceanTexture::vtx_ReadChannels(ILxUnknownID attr, void  **ppvData)
 	RendData		*rd = new RendData;
 
     rd->m_outputType = at.Int(m_idx_outputType);
-	if(rd->m_outputType > 5)
+	if(rd->m_outputType > 3)
     {
-        rd->m_outputType = 5;
+        rd->m_outputType = 3;
     }
 	if(rd->m_outputType < 0)
     {
@@ -390,6 +390,8 @@ void aaOceanTexture::vtx_Evaluate (ILxUnknownID etor, int *idx, ILxUnknownID vec
     
     LXtFVector surfaceNormal;
     LXx_VCROSS(surfaceNormal,tInp->dpdu, tInp->dpdv);
+    double surfaceNormalMag = sqrt(LXx_VDOT(surfaceNormal, surfaceNormal));
+    
     
     // Maya code for reference :
 	// get height field
@@ -428,6 +430,7 @@ void aaOceanTexture::vtx_Evaluate (ILxUnknownID etor, int *idx, ILxUnknownID vec
      */
 
     float result[3]; // vector for the color output.
+    float temp;
     result[0] = result[1] = result[2] = 0.0;
     float value = 0.0; // value output
     float alpha = 1.0; // alpha output
@@ -448,7 +451,7 @@ void aaOceanTexture::vtx_Evaluate (ILxUnknownID etor, int *idx, ILxUnknownID vec
         // aaOceans works expecting 0-1 input range for UVs. To fit our ocean size into this 0-1 space, we need to divide it down. This is a first pass implementation.
         // The approach may change based on user feedback and subsequent refinement.
         
-        if(rd->m_outputType == 0) // normal displacement texture configuration
+        if ((rd->m_outputType == 0) || (rd->m_outputType == 4)) // normal displacement texture configuration
         {
 #ifdef TEXRENDDATA
             result[1] = rd->m_ocean->getOceanData(x_pos, z_pos, aaOcean::eHEIGHTFIELD);
@@ -471,21 +474,21 @@ void aaOceanTexture::vtx_Evaluate (ILxUnknownID etor, int *idx, ILxUnknownID vec
                 result[2] = 0.0;
             }
 #endif
-
-            /*if (LXx_VLEN(result) != 0)
+            
+            if (LXx_VLEN(result) != 0)
             {
                 LXx_VSCL(result,1/LXx_VLEN(result));
-            }*/
+            }
             if(rd->m_outputType == 0) // normal displacement texture configuration
             {
                 // Fit to 0-1 range, with 0.5 being no displacement
                 result[0] = (result[0]+1)/2;
                 result[1] = (result[1]+1)/2;
                 result[2] = (result[2]+1)/2;
-
                 value = result[1];// * rd->m_waveHeight; // in case displacement is used rather than vector displacement.
             }
-
+            
+            
             if((rd->m_outputType == 4) || (rd->m_outputType == 5))// tangent conversion v1
             {
                 LXtFVector objectSpaceVector;
@@ -527,7 +530,18 @@ void aaOceanTexture::vtx_Evaluate (ILxUnknownID etor, int *idx, ILxUnknownID vec
                     result[1] = tan[2];
                     value = LXx_VLEN(tan); // sqrt(LXx_VDOT(projectedOnNormal, projectedOnNormal));
                 }
+
+                // value = result[1];// * rd->m_waveHeight; // in case displacement is used rather than vector displacement.
+
+             
+                assert(result[0] >= 0);
+                assert(result[0] <= 1);
+                assert(result[1] >= 0);
+                assert(result[1] <= 1);
+                assert(result[2] >= 0);
+                assert(result[2] <= 1);
             }
+            
         }
         if(rd->m_outputType == 1) // foam map requested
         {

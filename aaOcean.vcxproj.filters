@@ -15,42 +15,42 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="aaOcean_chanmod.h">
+    <ClInclude Include="aaOcean\aaOcean_chanmod.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="aaOcean_command.h">
+    <ClInclude Include="aaOcean\aaOcean_command.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="aaOcean_deformer.h">
+    <ClInclude Include="aaOcean\aaOcean_deformer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="aaOcean_init.h">
+    <ClInclude Include="aaOcean\aaOcean_init.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="aaOcean_texture.h">
+    <ClInclude Include="aaOcean\aaOcean_texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\dependencies\aaOcean\src\aaOceanClass.h">
+    <ClInclude Include="dependencies\aaOcean\src\aaOceanClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="aaOcean_chanmod.cpp">
+    <ClCompile Include="aaOcean\aaOcean_chanmod.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="aaOcean_command.cpp">
+    <ClCompile Include="aaOcean\aaOcean_command.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="aaOcean_deformer.cpp">
+    <ClCompile Include="aaOcean\aaOcean_deformer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="aaOcean_init.cpp">
+    <ClCompile Include="aaOcean\aaOcean_init.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="aaOcean_texture.cpp">
+    <ClCompile Include="aaOcean\aaOcean_texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\dependencies\aaOcean\src\aaOceanClass.cpp">
+    <ClCompile Include="dependencies\aaOcean\src\aaOceanClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
