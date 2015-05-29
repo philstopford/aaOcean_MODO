@@ -113,8 +113,9 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>MODO801;WIN32;_DEBUG;_WINDOWS;_USRDLL;AAOCEAN_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\Phil\Documents\development\modo\aaOceanModo\dependencies\helpers;C:\Users\Phil\Documents\development\modo\LXSDK_77509_801\include;C:\Users\Phil\Documents\development\modo\aaOceanModo\dependencies\fftw\fftw-3.3.4\api;C:\Users\Phil\Documents\development\modo\aaOceanModo\dependencies\aaOcean\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;AAOCEAN_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\Phil\Documents\development\modo\aaOceanModo\dependencies\helpers;C:\Users\Phil\Documents\development\modo\LXSDK_81801_801\include;C:\Users\Phil\Documents\development\modo\aaOceanModo\dependencies\fftw\fftw-3.3.4\api;C:\Users\Phil\Documents\development\modo\aaOceanModo\dependencies\aaOcean\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-fopenmp %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -148,8 +149,9 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>TEXRENDDATA;MODO801;WIN32;NDEBUG;_WINDOWS;_USRDLL;AAOCEAN_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\Phil\Documents\development\modo\aaOceanModo\dependencies\helpers;C:\Users\Phil\Documents\development\modo\LXSDK_77509_801\include;C:\Users\Phil\Documents\development\modo\aaOceanModo\dependencies\fftw\fftw-3.3.4\api;C:\Users\Phil\Documents\development\modo\aaOceanModo\dependencies\aaOcean\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;AAOCEAN_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\Phil\Documents\development\modo\aaOceanModo\dependencies\helpers;C:\Users\Phil\Documents\development\modo\LXSDK_81801_801\include;C:\Users\Phil\Documents\development\modo\aaOceanModo\dependencies\fftw\fftw-3.3.4\api;C:\Users\Phil\Documents\development\modo\aaOceanModo\dependencies\aaOcean\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-fopenmp %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
