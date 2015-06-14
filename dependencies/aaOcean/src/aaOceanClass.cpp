@@ -19,11 +19,11 @@
 #endif
 
 #include <cmath>
-#ifdef _OPENMP
+//#ifdef _OPENMP
 #include <omp.h>
-#else
-#define omp_get_num_procs() 1 // arbitrary - seems to make little practical difference.
-#endif
+//#else
+//#define omp_get_num_procs() 1 // arbitrary - seems to make little practical difference.
+//#endif
 #include <climits>
 #include <float.h>
 #include <string.h>
@@ -137,7 +137,7 @@ int aaOcean::getResolution()
 	return m_resolution;
 }
 
-void aaOcean::input(int resolution, ULONG seed, float oceanScale, float oceanDepth, float surfaceTension, 
+void aaOcean::input(int resolution, unsigned long seed, float oceanScale, float oceanDepth, float surfaceTension,
 					float velocity, float cutoff, float windDir, int windAlign, float damp, float waveSpeed, 
 					float waveHeight, float chopAmount, float time, float loopTime, bool doFoam, bool doNormals)
 {
@@ -465,14 +465,14 @@ void aaOcean::clearArrays()
 	fftwf_cleanup();
 }
 
-ULONG aaOcean::generateUID(float xCoord, float zCoord)
+unsigned long aaOcean::generateUID(float xCoord, float zCoord)
 {
 	// a very simple hash function. should probably do a better one at some point
 	 float angle;
 	 float length;
 	 float coordSq;
 	 float id_out;
-	ULONG returnVal = 1;
+	unsigned long returnVal = 1;
 
 	if (zCoord != 0.0f && xCoord != 0.0f)
 	{
@@ -488,11 +488,11 @@ ULONG aaOcean::generateUID(float xCoord, float zCoord)
 		id_out = coordSq + (length * angle) + 0.5f;
 		
 		if(angle == 0.0f)
-			returnVal = (ULONG)coordSq;
+			returnVal = (unsigned long)coordSq;
 		else if (zCoord <= 0.0f)
-			returnVal = (ULONG)floor(id_out);
+			returnVal = (unsigned long)floor(id_out);
 		else
-			returnVal = INT_MAX - (ULONG)floor(id_out) ;
+			returnVal = INT_MAX - (unsigned long)floor(id_out) ;
 	}
 	return returnVal;
 }
@@ -503,7 +503,7 @@ void aaOcean::setupGrid()
 		return;
 	 const int n = m_resolution;
 	 const int half_n = (-n / 2) - ((n-1) / 2);
-	 ULONG index, uID;
+	 unsigned long index, uID;
 
 	#pragma omp parallel for private(index, uID)
 	for(int i = 0; i < n; ++i)
@@ -515,7 +515,7 @@ void aaOcean::setupGrid()
 			m_xCoord[index] = half_n + i * 2 ;
 			m_zCoord[index] = half_n + j * 2 ;
 
-			uID = (ULONG)generateUID((float)m_xCoord[index], (float)m_zCoord[index]);
+			uID = (unsigned long)generateUID((float)m_xCoord[index], (float)m_zCoord[index]);
 
 			StochasticLib1 sto(uID + (unsigned int)m_seed);
 			m_rand1[index] = (float)sto.Normal(0.0, 1.0);
@@ -848,6 +848,104 @@ void aaOcean::evaluateNormal()
 	}
 }
 */
+
+void aaOcean::setMinMax(float& maxXDisp,
+                        float& maxYDisp,
+                        float& maxZDisp)
+{
+    // Try and get some normalization parameters set up.
+    float *xResults = new float[100];
+    float *yResults = new float[100];
+    float *zResults = new float[100];
+    for (int x = 0; x < 10; x++) // as the ocean tiles
+    {
+        for (int z = 0; z < 10; z++)
+        {
+            float xCoord = x * 0.1f;
+            float zCoord = z * 0.1f;
+            yResults[x * z] = getOceanData(xCoord, zCoord, aaOcean::eHEIGHTFIELD);
+            if (isChoppy())
+            {
+                xResults[x * z] = getOceanData(xCoord, zCoord, aaOcean::eCHOPX);
+                zResults[x * z] = getOceanData(xCoord, zCoord, aaOcean::eCHOPZ);
+            }
+        }
+    }
+    
+    float normalizationX, normalizationY, normalizationZ;
+    normalizationX = xResults[0];
+    normalizationZ = zResults[0];
+    normalizationY = yResults[0];
+    
+    for (int i = 1; i < 100; i++)
+    {
+        if (std::abs(xResults[i]) > normalizationX)
+        {
+            normalizationX = std::abs(xResults[i]);
+        }
+        if (std::abs(yResults[i]) > normalizationY)
+        {
+            normalizationY = std::abs(yResults[i]);
+        }
+        if (std::abs(zResults[i]) > normalizationZ)
+        {
+            normalizationZ = std::abs(zResults[i]);
+        }
+    }
+    
+    // Safety first
+    if (normalizationX == 0)
+    {
+        normalizationX = 1.0f;
+    }
+    if (normalizationY == 0)
+    {
+        normalizationY = 1.0f;
+    }
+    if (normalizationZ == 0)
+    {
+        normalizationZ = 1.0f;
+    }
+    
+    maxXDisp = normalizationX;
+    maxYDisp = normalizationY;
+    maxZDisp = normalizationZ;
+}
+
+void aaOcean::getBounds(float& outCBoundsXMin, float& outCBoundsXMax, float& outCBoundsZMin, float& outCBoundsZMax, float& outHFBoundsYMin, float& outHFBoundsYMax)
+{
+    outCBoundsXMax = -FLT_MAX;
+    outCBoundsXMin =  FLT_MAX;
+
+    outCBoundsZMax = -FLT_MAX;
+    outCBoundsZMin =  FLT_MAX;
+    
+    outHFBoundsYMax = -FLT_MAX;
+    outHFBoundsYMin = FLT_MAX;
+    
+    int index, n;
+    n = m_resolution * m_resolution;
+    for(index = 0; index < n; index++)
+    {
+        if(outCBoundsXMax < m_fft_chopX[index][0])
+            outCBoundsXMax = m_fft_chopX[index][0];
+        
+        if(outCBoundsXMin > m_fft_chopX[index][0])
+            outCBoundsXMin = m_fft_chopX[index][0];
+
+        if(outCBoundsZMax < m_fft_chopZ[index][0])
+            outCBoundsZMax = m_fft_chopZ[index][0];
+        
+        if(outCBoundsZMin > m_fft_chopZ[index][0])
+            outCBoundsZMin = m_fft_chopZ[index][0];
+
+        if(outHFBoundsYMax < m_fft_htField[index][0])
+            outHFBoundsYMax = m_fft_htField[index][0];
+        
+        if(outHFBoundsYMin > m_fft_htField[index][0])
+            outHFBoundsYMin = m_fft_htField[index][0];
+    }
+}
 
 void aaOcean::getFoamBounds(float& outBoundsMin, float& outBoundsMax)
 {
