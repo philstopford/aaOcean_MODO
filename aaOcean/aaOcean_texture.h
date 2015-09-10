@@ -13,8 +13,6 @@
 #include <string>
 #include <math.h>
 #include <float.h>
-#include <mutex>
-#include <memory>
 
 #include "aaOceanClass.h"
 
@@ -41,9 +39,6 @@ class OceanData {
         bool m_doFoam; // default is FALSE for now.
         bool m_doNormals; // default is FALSE
         float m_time;
-		float minX, maxX, minY, maxY, minZ, maxZ; // bounds
-        float maxXDisp, maxYDisp, maxZDisp; // displacement limits
-        float xDispConversionFactor, yDispConversionFactor, zDispConversionFactor;
 
         bool operator == (const OceanData &oceanData) const {
             return (this->m_resolution == oceanData.m_resolution &&
@@ -155,7 +150,8 @@ class aaOceanTexture : public CLxImpl_ValueTexture
         bool m_doFoamCache;
         bool m_doNormalsCache;
         float m_timeCache;
-    };
+
+};
     void initialize ()
     {
         CLxGenericPolymorph		*srv;

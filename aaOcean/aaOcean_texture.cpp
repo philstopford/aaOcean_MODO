@@ -303,15 +303,7 @@ void aaOceanTexture::maybeResetOceanData(std::unique_ptr<OceanData> newOceanData
                            oceanData_->m_repeatTime,
                            oceanData_->m_doFoam,
                            oceanData_->m_doNormals);
-
-			// Attempt to get bounding box of ocean, to avoid clipping.
-			mOcean_.getBounds(oceanData_->minX, oceanData_->maxX, oceanData_->minZ, oceanData_->maxZ, oceanData_->minY, oceanData_->maxY);
-            
-            // Get the min/max displacement values in all axes, for normalization
-            mOcean_.setMinMax(oceanData_->maxXDisp,
-                              oceanData_->maxYDisp,
-                              oceanData_->maxZDisp);
-		}
+        }
     }
 }
 
@@ -334,30 +326,30 @@ void aaOceanTexture::vtx_Evaluate (ILxUnknownID etor, int *idx, ILxUnknownID vec
      worldSpaceVec[1] = pOcean->getOceanData(u[i], v[i], aaOcean::eHEIGHTFIELD);
      if(pOcean->isChoppy())
      {
-         // get x and z displacement
-         worldSpaceVec[0] = pOcean->getOceanData(u[i], v[i], aaOcean::eCHOPX);
-         worldSpaceVec[2] = pOcean->getOceanData(u[i], v[i], aaOcean::eCHOPZ);
-         
-         if(foam)
-         {
-             if(foundEigenVector)
-             {
-                 r = pOcean->getOceanData(u[i], v[i], aaOcean::eEIGENMINUSX);
-                 g = pOcean->getOceanData(u[i], v[i], aaOcean::eEIGENMINUSZ);
-                 b = pOcean->getOceanData(u[i], v[i], a aOcean::eEIGENPLUSX);
-                 a = pOcean->getOceanData(u[i], v[i], aaOcean::eEIGENPLUSZ);
-                 colArrayEigenVector.set(i, r, g, b, a);
-             }
-             if(foundEigenValue)
-             {
-                 if(invert)
-                     r = 1.0f - pOcean->getOceanData(u[i], v[i], aaOcean::eFOAM);
-                 else
-                     r = pOcean->getOceanData(u[i], v[i], aaOcean::eFOAM);
-                 
-                 colArrayEigenValue.set(i, r, r, r);
-             }
-         }
+     // get x and z displacement
+     worldSpaceVec[0] = pOcean->getOceanData(u[i], v[i], aaOcean::eCHOPX);
+     worldSpaceVec[2] = pOcean->getOceanData(u[i], v[i], aaOcean::eCHOPZ);
+     
+     if(foam)
+     {
+     if(foundEigenVector)
+     {
+     r = pOcean->getOceanData(u[i], v[i], aaOcean::eEIGENMINUSX);
+     g = pOcean->getOceanData(u[i], v[i], aaOcean::eEIGENMINUSZ);
+     b = pOcean->getOceanData(u[i], v[i], aaOcean::eEIGENPLUSX);
+     a = pOcean->getOceanData(u[i], v[i], aaOcean::eEIGENPLUSZ);
+     colArrayEigenVector.set(i, r, g, b, a);
+     }
+     if(foundEigenValue)
+     {
+     if(invert)
+     r = 1.0f - pOcean->getOceanData(u[i], v[i], aaOcean::eFOAM);
+     else
+     r = pOcean->getOceanData(u[i], v[i], aaOcean::eFOAM);
+     
+     colArrayEigenValue.set(i, r, r, r);
+     }
+     }
      }
      
      localSpaceVec = worldSpaceVec * transform;
@@ -369,17 +361,17 @@ void aaOceanTexture::vtx_Evaluate (ILxUnknownID etor, int *idx, ILxUnknownID vec
     float value = 0.0; // value output
     float alpha = 1.0; // alpha output
 
-    float x = tInp->uvw[0];
-    float x_pos = x/oceanData_->m_oceanSize;
-    float y = tInp->uvw[1];
-    float z = tInp->uvw[2];
-    float z_pos = z/oceanData_->m_oceanSize;
-    
+    float x_pos = tInp->uvw[0]/oceanData_->m_oceanSize;
+    float z_pos = tInp->uvw[2]/oceanData_->m_oceanSize;
+
     tOut->direct   = 1;
     // The intent of tInpDsp->enable isn't entirely clear. The docs, such as they are, indicate that the texture should set this when outputting displacement.
     tInpDsp->enable = true;
+
+    // aaOceans works expecting 0-1 input range for UVs. To fit our ocean size into this 0-1 space, we need to divide it down. This is a first pass implementation.
+    // The approach may change based on user feedback and subsequent refinement.
     
-    if((oceanData_->m_outputType == 0) || (oceanData_->m_outputType == 4) || (oceanData_->m_outputType == 5) || (oceanData_->m_outputType == 6)) // normal displacement texture configuration
+    if(oceanData_->m_outputType == 0) // normal displacement texture configuration
     {
         result[1] = mOcean_.getOceanData(x_pos, z_pos, aaOcean::eHEIGHTFIELD);
         if (mOcean_.isChoppy())
@@ -391,17 +383,19 @@ void aaOceanTexture::vtx_Evaluate (ILxUnknownID etor, int *idx, ILxUnknownID vec
             result[2] = 0.0;
         }
 
-        // Attempt to normalize
-        result[0] = result[0]/oceanData_->maxXDisp;
-        result[1] = result[1]/oceanData_->maxYDisp;
-        result[2] = result[2]/oceanData_->maxZDisp;
-        
-        // Fit to 0-1 range, with 0.5 being no displacement
-        result[0] = (result[0]+1)/2;
-        result[1] = (result[1]+1)/2;
-        result[2] = (result[2]+1)/2;
+        /*if (LXx_VLEN(result) != 0)
+        {
+            LXx_VSCL(result,1/LXx_VLEN(result));
+        }*/
+        if(oceanData_->m_outputType == 0) // normal displacement texture configuration
+        {
+            // Fit to 0-1 range, with 0.5 being no displacement
+            result[0] = (result[0]+1)/2;
+            result[1] = (result[1]+1)/2;
+            result[2] = (result[2]+1)/2;
 
-        value = result[1];// * rd->m_waveHeight; // in case displacement is used rather than vector displacement.
+            value = result[1];// * rd->m_waveHeight; // in case displacement is used rather than vector displacement.
+        }
 
         if((oceanData_->m_outputType == 4) || (oceanData_->m_outputType == 5) || (oceanData_->m_outputType == 6))// tangent conversion v1
         {
@@ -414,63 +408,62 @@ void aaOceanTexture::vtx_Evaluate (ILxUnknownID etor, int *idx, ILxUnknownID vec
             
             double objectSpaceVectorMag = LXx_VLEN(objectSpaceVector);
             
-            switch (oceanData_->m_outputType)
+            if (oceanData_->m_outputType == 4)
             {
-                case 4:
-                    LXtFVector projectedResult;
-                    
-                    // From http://www.euclideanspace.com/maths/geometry/elements/plane/lineOnPlane/
-                    LXx_VCROSS(projectedResult, objectSpaceVector,surfaceNormal);
-                    LXx_VSCL(projectedResult, 1/(objectSpaceVectorMag));
-                    LXx_VCROSS(projectedResult, objectSpaceVector, projectedResult);
-                    LXx_VSCL(projectedResult, 1/(objectSpaceVectorMag));
-                    
-                    LXtFVector projectedOnNormal;
-                    LXx_VCPY(projectedOnNormal, objectSpaceVector);
-                    LXx_VSCL(projectedOnNormal, 1/(objectSpaceVectorMag * objectSpaceVectorMag));
-                    LXx_VSCL(projectedOnNormal, LXx_VDOT(surfaceNormal, objectSpaceVector));
-
-                    result[0] = projectedResult[0];
-                    result[1] = projectedResult[2];
-                    result[2] = projectedResult[1];
-                    value = LXx_VLEN(projectedResult); // sqrt(LXx_VDOT(projectedOnNormal, projectedOnNormal));
-                    break;
-
-                case 5:
-                    LXtVector tan;
-                    tan[0] = LXx_VDOT (tInp->dpdu, objectSpaceVector);
-                    tan[1] = LXx_VDOT (tInp->dpdv, objectSpaceVector);
-                    tan[2] = LXx_VDOT (surfaceNormal, objectSpaceVector);
-                    
-                    result[0] = tan[0];
-                    result[2] = tan[1];
-                    result[1] = tan[2];
-                    value = LXx_VLEN(tan); // sqrt(LXx_VDOT(projectedOnNormal, projectedOnNormal));
-                    break;
-                case 6:
-                    // LXtFVector rgb;
-                    LXx_VCPY(cu, tInp->dpdu);
-                    LXx_VCPY(cv, tInp->dpdv);
-                    
-                    VNormalizeF(cu);
-                    VNormalizeF(cv);
-                    
-                    NUVBasisF(surfaceNormal, cu, cv);
-                    
-                    LXtFMatrix myMatrix;
-                    for (int i = 0; i < 3; i++)
-                    {
-                        myMatrix[0][i] = cu[i];
-                        myMatrix[1][i] = cv[i];
-                        myMatrix[2][i] = surfaceNormal[i];
-                    }
-                    
-                    lx::MatrixTranspose(myMatrix);
-                    
-                    lx::MatrixMultiply(result, myMatrix, objectSpaceVector);
+                LXtFVector projectedResult;
                 
-                    // LXx_VCPY(result, rgb);
-                    break;
+                // From http://www.euclideanspace.com/maths/geometry/elements/plane/lineOnPlane/
+                LXx_VCROSS(projectedResult, objectSpaceVector,surfaceNormal);
+                LXx_VSCL(projectedResult, 1/(objectSpaceVectorMag));
+                LXx_VCROSS(projectedResult, objectSpaceVector, projectedResult);
+                LXx_VSCL(projectedResult, 1/(objectSpaceVectorMag));
+                
+                LXtFVector projectedOnNormal;
+                LXx_VCPY(projectedOnNormal, objectSpaceVector);
+                LXx_VSCL(projectedOnNormal, 1/(objectSpaceVectorMag * objectSpaceVectorMag));
+                LXx_VSCL(projectedOnNormal, LXx_VDOT(surfaceNormal, objectSpaceVector));
+
+                result[0] = projectedResult[0];
+                result[1] = projectedResult[2];
+                result[2] = projectedResult[1];
+                value = LXx_VLEN(projectedResult); // sqrt(LXx_VDOT(projectedOnNormal, projectedOnNormal));
+            }
+            if (oceanData_->m_outputType == 5)
+            {
+                LXtVector tan;
+                tan[0] = LXx_VDOT (tInp->dpdu, objectSpaceVector);
+                tan[1] = LXx_VDOT (tInp->dpdv, objectSpaceVector);
+                tan[2] = LXx_VDOT (surfaceNormal, objectSpaceVector);
+                
+                result[0] = tan[0];
+                result[2] = tan[1];
+                result[1] = tan[2];
+                value = LXx_VLEN(tan); // sqrt(LXx_VDOT(projectedOnNormal, projectedOnNormal));
+            }
+            if (oceanData_->m_outputType == 6)
+            {
+                // LXtFVector rgb;
+                LXx_VCPY(cu, tInp->dpdu);
+                LXx_VCPY(cv, tInp->dpdv);
+                
+                VNormalizeF(cu);
+                VNormalizeF(cv);
+                
+                NUVBasisF(surfaceNormal, cu, cv);
+                
+                LXtFMatrix myMatrix;
+                for (int i = 0; i < 3; i++)
+                {
+                    myMatrix[0][i] = cu[i];
+                    myMatrix[1][i] = cv[i];
+                    myMatrix[2][i] = surfaceNormal[i];
+                }
+                
+                lx::MatrixTranspose(myMatrix);
+                
+                lx::MatrixMultiply(result, myMatrix, objectSpaceVector);
+                
+                // LXx_VCPY(result, rgb);
             }
         }
     }

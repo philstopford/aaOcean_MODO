@@ -219,47 +219,7 @@ aaOceanChanMod::cmod_Allocate (
         modItem.ChannelLookup ("Eigenminus.Z", &m_idx_eigenminusZ);
         chanMod.AddOutput (item, m_idx_eigenminusZ);
         cm_idx_eigenminusZ = index;
-        index++;
-        
-        // Lookup the index of the 'min' channel and add it as an output.
-        modItem.ChannelLookup ("Min.X", &m_idx_minX);
-        chanMod.AddOutput (item, m_idx_minX);
-        cm_idx_minX = index;
-        index++;
-        modItem.ChannelLookup ("Min.Y", &m_idx_minY);
-        chanMod.AddOutput (item, m_idx_minY);
-        cm_idx_minY = index;
-        index++;
-        modItem.ChannelLookup ("Min.Z", &m_idx_minZ);
-        chanMod.AddOutput (item, m_idx_minZ);
-        cm_idx_minZ = index;
     
-        // Lookup the index of the 'max' channel and add it as an output.
-        modItem.ChannelLookup ("Max.X", &m_idx_maxX);
-        chanMod.AddOutput (item, m_idx_maxX);
-        cm_idx_maxX = index;
-        index++;
-        modItem.ChannelLookup ("Max.Y", &m_idx_maxY);
-        chanMod.AddOutput (item, m_idx_maxY);
-        cm_idx_maxY = index;
-        index++;
-        modItem.ChannelLookup ("Max.Z", &m_idx_maxZ);
-        chanMod.AddOutput (item, m_idx_maxZ);
-        cm_idx_maxZ = index;
-    
-        // Lookup the index of the 'max' channel and add it as an output.
-        modItem.ChannelLookup ("Normalization.X", &m_idx_normalizationX);
-        chanMod.AddOutput (item, m_idx_normalizationX);
-        cm_idx_normalizationX = index;
-        index++;
-        modItem.ChannelLookup ("Normalization.Y", &m_idx_normalizationY);
-        chanMod.AddOutput (item, m_idx_normalizationY);
-        cm_idx_normalizationY = index;
-        index++;
-        modItem.ChannelLookup ("Normalization.Z", &m_idx_normalizationZ);
-        chanMod.AddOutput (item, m_idx_normalizationZ);
-        cm_idx_normalizationZ = index;
-
         return LXe_OK;
 }
 
@@ -409,43 +369,6 @@ aaOceanChanMod::cmod_Flags (
                 return LXfCHMOD_OUTPUT;
         }
 
-        if (LXx_OK (modItem.ChannelLookup ("Min.X", &chanIdx))) {
-            if (index == chanIdx)
-                return LXfCHMOD_OUTPUT;
-        }
-        if (LXx_OK (modItem.ChannelLookup ("Max.X", &chanIdx))) {
-            if (index == chanIdx)
-                return LXfCHMOD_OUTPUT;
-        }
-        if (LXx_OK (modItem.ChannelLookup ("Min.Y", &chanIdx))) {
-            if (index == chanIdx)
-                return LXfCHMOD_OUTPUT;
-        }
-        if (LXx_OK (modItem.ChannelLookup ("Max.Y", &chanIdx))) {
-            if (index == chanIdx)
-                return LXfCHMOD_OUTPUT;
-        }
-        if (LXx_OK (modItem.ChannelLookup ("Min.Z", &chanIdx))) {
-            if (index == chanIdx)
-                return LXfCHMOD_OUTPUT;
-        }
-        if (LXx_OK (modItem.ChannelLookup ("Max.Z", &chanIdx))) {
-            if (index == chanIdx)
-                return LXfCHMOD_OUTPUT;
-        }
-        if (LXx_OK (modItem.ChannelLookup ("Normalization.X", &chanIdx))) {
-            if (index == chanIdx)
-                return LXfCHMOD_OUTPUT;
-        }
-        if (LXx_OK (modItem.ChannelLookup ("Normalization.Y", &chanIdx))) {
-            if (index == chanIdx)
-                return LXfCHMOD_OUTPUT;
-        }
-        if (LXx_OK (modItem.ChannelLookup ("Normalization.Z", &chanIdx))) {
-            if (index == chanIdx)
-                return LXfCHMOD_OUTPUT;
-        }
-    
         return 0;
 }
 
@@ -484,7 +407,14 @@ aaOceanChanMod::cmod_Evaluate (
 
     chanMod.ReadInputInt (attr, cm_idx_resolution, &iTemp);
     newOceanData->m_resolution = iTemp;
-    LXxCLAMP(newOceanData->m_resolution, 4, 14);
+	if(newOceanData->m_resolution > 14)
+    {
+        newOceanData->m_resolution = 14;
+    }
+	if(newOceanData->m_resolution < 4)
+    {
+        newOceanData->m_resolution = 4;
+    }
 
     chanMod.ReadInputFloat (attr, cm_idx_oceanSize, &dTemp);
     newOceanData->m_oceanSize = (float) dTemp;
@@ -551,11 +481,11 @@ aaOceanChanMod::cmod_Evaluate (
     float foam, eigenminus[3], eigenplus[3];
     bool foamy = false;
     
-    result[1] = (mOcean_.getOceanData(m_x, m_z, aaOcean::eHEIGHTFIELD));
+    result[1] = ((mOcean_.getOceanData(m_x, m_z, aaOcean::eHEIGHTFIELD)) + 1.0f)/2.0f;
     if (mOcean_.isChoppy())
     {
-        result[0] = (mOcean_.getOceanData(m_x, m_z, aaOcean::eCHOPX));
-        result[2] = (mOcean_.getOceanData(m_x, m_z, aaOcean::eCHOPZ));
+        result[0] = ((mOcean_.getOceanData(m_x, m_z, aaOcean::eCHOPX)) + 1.0f)/2.0f;
+        result[2] = ((mOcean_.getOceanData(m_x, m_z, aaOcean::eCHOPZ)) + 1.0f)/2.0f;
         if(oceanData_->m_doFoam)
         {
             foamy = true;
@@ -569,7 +499,6 @@ aaOceanChanMod::cmod_Evaluate (
         result[0] = 0.0f;
         result[2] = 0.0f;
     }
-    
     if (foamy == false)
     {
         foam = 0.0f;
@@ -589,15 +518,6 @@ aaOceanChanMod::cmod_Evaluate (
     chanMod.WriteOutputFloat (attr, cm_idx_eigenplusX, eigenplus[0]); // vector
     chanMod.WriteOutputFloat (attr, cm_idx_eigenplusY, eigenplus[1]); // vector
     chanMod.WriteOutputFloat (attr, cm_idx_eigenplusZ, eigenplus[2]); // vector
-    chanMod.WriteOutputFloat(attr, cm_idx_minX, oceanData_->minX);
-    chanMod.WriteOutputFloat(attr, cm_idx_maxX, oceanData_->maxX);
-    chanMod.WriteOutputFloat(attr, cm_idx_minY, oceanData_->minY);
-    chanMod.WriteOutputFloat(attr, cm_idx_maxY, oceanData_->maxY);
-    chanMod.WriteOutputFloat(attr, cm_idx_minZ, oceanData_->minZ);
-    chanMod.WriteOutputFloat(attr, cm_idx_maxZ, oceanData_->maxZ);
-    chanMod.WriteOutputFloat(attr, cm_idx_normalizationX, oceanData_->maxXDisp);
-    chanMod.WriteOutputFloat(attr, cm_idx_normalizationY, oceanData_->maxYDisp);
-    chanMod.WriteOutputFloat(attr, cm_idx_normalizationZ, oceanData_->maxZDisp);
     
     return LXe_OK;
 }
@@ -626,14 +546,6 @@ void aaOceanChanMod::maybeResetOceanData(std::unique_ptr<OceanData> newOceanData
                            oceanData_->m_repeatTime,
                            oceanData_->m_doFoam,
                            oceanData_->m_doNormals);
-
-            // Attempt to get bounding box of ocean, to avoid clipping.
-            mOcean_.getBounds(oceanData_->minX, oceanData_->maxX, oceanData_->minZ, oceanData_->maxZ, oceanData_->minY, oceanData_->maxY);
-
-            // Get the min/max displacement values in all axes, for normalization
-            mOcean_.setMinMax(oceanData_->maxXDisp,
-                              oceanData_->maxYDisp,
-                              oceanData_->maxZDisp);
         }
     }
 }
@@ -673,7 +585,7 @@ aaOceanChanModPackage::pkg_SetupChannels (
         ILxUnknownID		 addChan)
 {
         CLxUser_AddChannel	 ac (addChan);
-        LXtVector            displacement, eigenplus, eigenminus, min, max, normalization;
+        LXtVector            displacement, eigenplus, eigenminus;
 
         // Order here is not so important since we look up by name and set indices later. Yay for freedom!
 
@@ -753,21 +665,6 @@ aaOceanChanModPackage::pkg_SetupChannels (
         LXx_VCLR (eigenminus);
         ac.SetDefaultVec (eigenminus);
 
-        ac.NewChannel ("Min", LXsTYPE_FLOAT);
-        ac.SetVector(LXsCHANVEC_XYZ);
-        LXx_VCLR (min);
-        ac.SetDefaultVec (min);
-
-        ac.NewChannel ("Max", LXsTYPE_FLOAT);
-        ac.SetVector(LXsCHANVEC_XYZ);
-        LXx_VCLR (max);
-        ac.SetDefaultVec (max);
-
-        ac.NewChannel ("Normalization", LXsTYPE_FLOAT);
-        ac.SetVector(LXsCHANVEC_XYZ);
-        LXx_VCLR (normalization);
-        ac.SetDefaultVec (normalization);
-    
         return LXe_OK;
 }
 

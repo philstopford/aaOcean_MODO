@@ -10,25 +10,6 @@
 		4A08EA1D1964D33800C15AE7 /* aaOceanClass.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4A1AD52C1964751200693F00 /* aaOceanClass.cpp */; };
 		4A1AD52719646D2800693F00 /* aaOcean_deformer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4AFBD3BD191E6B5F00181ED4 /* aaOcean_deformer.h */; };
 		4A30ED101B16BEF5004FD98B /* libiomp5.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A30ED0F1B16BEF5004FD98B /* libiomp5.dylib */; };
-		4A7B514A161801210091E644 /* clean.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4A7B5137161801210091E644 /* clean.cpp */; };
-		4A7B514B161801210091E644 /* cwrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4A7B5138161801210091E644 /* cwrap.cpp */; };
-		4A7B514C161801210091E644 /* lxu_attributes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4A7B5139161801210091E644 /* lxu_attributes.cpp */; };
-		4A7B514D161801210091E644 /* lxu_command.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4A7B513A161801210091E644 /* lxu_command.cpp */; };
-		4A7B514E161801210091E644 /* lxu_deform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4A7B513B161801210091E644 /* lxu_deform.cpp */; };
-		4A7B514F161801210091E644 /* lxu_format.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4A7B513C161801210091E644 /* lxu_format.cpp */; };
-		4A7B5150161801210091E644 /* lxu_geometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4A7B513D161801210091E644 /* lxu_geometry.cpp */; };
-		4A7B5151161801210091E644 /* lxu_log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4A7B513E161801210091E644 /* lxu_log.cpp */; };
-		4A7B5152161801210091E644 /* lxu_math.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4A7B513F161801210091E644 /* lxu_math.cpp */; };
-		4A7B5153161801210091E644 /* lxu_message.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4A7B5140161801210091E644 /* lxu_message.cpp */; };
-		4A7B5154161801210091E644 /* lxu_modifier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4A7B5141161801210091E644 /* lxu_modifier.cpp */; };
-		4A7B5155161801210091E644 /* lxu_parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4A7B5142161801210091E644 /* lxu_parser.cpp */; };
-		4A7B5156161801210091E644 /* lxu_prefvalue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4A7B5143161801210091E644 /* lxu_prefvalue.cpp */; };
-		4A7B5157161801210091E644 /* lxu_queries.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4A7B5144161801210091E644 /* lxu_queries.cpp */; };
-		4A7B5158161801210091E644 /* lxu_scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4A7B5145161801210091E644 /* lxu_scene.cpp */; };
-		4A7B5159161801210091E644 /* lxu_select.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4A7B5146161801210091E644 /* lxu_select.cpp */; };
-		4A7B515A161801210091E644 /* lxu_simd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4A7B5147161801210091E644 /* lxu_simd.cpp */; };
-		4A7B515B161801210091E644 /* lxu_surface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4A7B5148161801210091E644 /* lxu_surface.cpp */; };
-		4A7B515C161801210091E644 /* util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4A7B5149161801210091E644 /* util.cpp */; };
 		4A7B51601618018B0091E644 /* libcommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A7B5132161801040091E644 /* libcommon.a */; };
 		4A89A8061964A38600CE3A3C /* aaOceanClass.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A1AD52519645A1500693F00 /* aaOceanClass.h */; };
 		4A89A8071964A39600CE3A3C /* aaOcean_command.h in Headers */ = {isa = PBXBuildFile; fileRef = 4AFBD3BB191E6B5F00181ED4 /* aaOcean_command.h */; };
@@ -36,6 +17,28 @@
 		4AA1DDE9198C5193008C6D2E /* aaOcean_init.h in Headers */ = {isa = PBXBuildFile; fileRef = 4AA1DDE7198C5193008C6D2E /* aaOcean_init.h */; };
 		4AA1DDEC198C524B008C6D2E /* aaOcean_texture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4AA1DDEA198C524B008C6D2E /* aaOcean_texture.cpp */; };
 		4AA1DDED198C524B008C6D2E /* aaOcean_texture.h in Headers */ = {isa = PBXBuildFile; fileRef = 4AA1DDEB198C524B008C6D2E /* aaOcean_texture.h */; };
+		4AC23C0A1BA208570094083D /* clean.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4AC23BF41BA208570094083D /* clean.cpp */; };
+		4AC23C0B1BA208570094083D /* cwrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4AC23BF51BA208570094083D /* cwrap.cpp */; };
+		4AC23C0C1BA208570094083D /* lxu_attrdesc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4AC23BF61BA208570094083D /* lxu_attrdesc.cpp */; };
+		4AC23C0D1BA208570094083D /* lxu_attributes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4AC23BF71BA208570094083D /* lxu_attributes.cpp */; };
+		4AC23C0E1BA208570094083D /* lxu_command.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4AC23BF81BA208570094083D /* lxu_command.cpp */; };
+		4AC23C0F1BA208570094083D /* lxu_deform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4AC23BF91BA208570094083D /* lxu_deform.cpp */; };
+		4AC23C101BA208570094083D /* lxu_format.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4AC23BFA1BA208570094083D /* lxu_format.cpp */; };
+		4AC23C111BA208570094083D /* lxu_geometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4AC23BFB1BA208570094083D /* lxu_geometry.cpp */; };
+		4AC23C121BA208570094083D /* lxu_log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4AC23BFC1BA208570094083D /* lxu_log.cpp */; };
+		4AC23C131BA208570094083D /* lxu_math.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4AC23BFD1BA208570094083D /* lxu_math.cpp */; };
+		4AC23C141BA208570094083D /* lxu_message.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4AC23BFE1BA208570094083D /* lxu_message.cpp */; };
+		4AC23C151BA208570094083D /* lxu_modifier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4AC23BFF1BA208570094083D /* lxu_modifier.cpp */; };
+		4AC23C161BA208570094083D /* lxu_parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4AC23C001BA208570094083D /* lxu_parser.cpp */; };
+		4AC23C171BA208570094083D /* lxu_prefvalue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4AC23C011BA208570094083D /* lxu_prefvalue.cpp */; };
+		4AC23C181BA208570094083D /* lxu_queries.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4AC23C021BA208570094083D /* lxu_queries.cpp */; };
+		4AC23C191BA208570094083D /* lxu_scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4AC23C031BA208570094083D /* lxu_scene.cpp */; };
+		4AC23C1A1BA208570094083D /* lxu_select.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4AC23C041BA208570094083D /* lxu_select.cpp */; };
+		4AC23C1B1BA208570094083D /* lxu_simd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4AC23C051BA208570094083D /* lxu_simd.cpp */; };
+		4AC23C1C1BA208570094083D /* lxu_surface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4AC23C061BA208570094083D /* lxu_surface.cpp */; };
+		4AC23C1D1BA208570094083D /* lxu_tableau.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4AC23C071BA208570094083D /* lxu_tableau.cpp */; };
+		4AC23C1E1BA208570094083D /* lxu_vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4AC23C081BA208570094083D /* lxu_vector.cpp */; };
+		4AC23C1F1BA208570094083D /* util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4AC23C091BA208570094083D /* util.cpp */; };
 		4AD9E0DF198D9AB30013A4C6 /* aaOcean_chanmod.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4AD9E0DB198D1E5B0013A4C6 /* aaOcean_chanmod.cpp */; };
 		4AD9E0E0198D9AB70013A4C6 /* aaOcean_chanmod.h in Headers */ = {isa = PBXBuildFile; fileRef = 4AD9E0DC198D1E5B0013A4C6 /* aaOcean_chanmod.h */; };
 		4AD9E0E3198DBA3D0013A4C6 /* libfftw3f.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A1AD529196470C300693F00 /* libfftw3f.a */; };
@@ -72,29 +75,32 @@
 		4A1AD52C1964751200693F00 /* aaOceanClass.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = aaOceanClass.cpp; path = dependencies/aaOcean/src/aaOceanClass.cpp; sourceTree = SOURCE_ROOT; };
 		4A30ED0F1B16BEF5004FD98B /* libiomp5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiomp5.dylib; path = ../../../../../../usr/local/Cellar/libiomp/20150401/lib/libiomp5.dylib; sourceTree = "<group>"; };
 		4A7B5132161801040091E644 /* libcommon.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcommon.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		4A7B5137161801210091E644 /* clean.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = clean.cpp; path = ../LXSDK/common/clean.cpp; sourceTree = "<group>"; };
-		4A7B5138161801210091E644 /* cwrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = cwrap.cpp; path = ../LXSDK/common/cwrap.cpp; sourceTree = "<group>"; };
-		4A7B5139161801210091E644 /* lxu_attributes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_attributes.cpp; path = ../LXSDK/common/lxu_attributes.cpp; sourceTree = "<group>"; };
-		4A7B513A161801210091E644 /* lxu_command.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_command.cpp; path = ../LXSDK/common/lxu_command.cpp; sourceTree = "<group>"; };
-		4A7B513B161801210091E644 /* lxu_deform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_deform.cpp; path = ../LXSDK/common/lxu_deform.cpp; sourceTree = "<group>"; };
-		4A7B513C161801210091E644 /* lxu_format.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_format.cpp; path = ../LXSDK/common/lxu_format.cpp; sourceTree = "<group>"; };
-		4A7B513D161801210091E644 /* lxu_geometry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_geometry.cpp; path = ../LXSDK/common/lxu_geometry.cpp; sourceTree = "<group>"; };
-		4A7B513E161801210091E644 /* lxu_log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_log.cpp; path = ../LXSDK/common/lxu_log.cpp; sourceTree = "<group>"; };
-		4A7B513F161801210091E644 /* lxu_math.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_math.cpp; path = ../LXSDK/common/lxu_math.cpp; sourceTree = "<group>"; };
-		4A7B5140161801210091E644 /* lxu_message.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_message.cpp; path = ../LXSDK/common/lxu_message.cpp; sourceTree = "<group>"; };
-		4A7B5141161801210091E644 /* lxu_modifier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_modifier.cpp; path = ../LXSDK/common/lxu_modifier.cpp; sourceTree = "<group>"; };
-		4A7B5142161801210091E644 /* lxu_parser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_parser.cpp; path = ../LXSDK/common/lxu_parser.cpp; sourceTree = "<group>"; };
-		4A7B5143161801210091E644 /* lxu_prefvalue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_prefvalue.cpp; path = ../LXSDK/common/lxu_prefvalue.cpp; sourceTree = "<group>"; };
-		4A7B5144161801210091E644 /* lxu_queries.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_queries.cpp; path = ../LXSDK/common/lxu_queries.cpp; sourceTree = "<group>"; };
-		4A7B5145161801210091E644 /* lxu_scene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_scene.cpp; path = ../LXSDK/common/lxu_scene.cpp; sourceTree = "<group>"; };
-		4A7B5146161801210091E644 /* lxu_select.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_select.cpp; path = ../LXSDK/common/lxu_select.cpp; sourceTree = "<group>"; };
-		4A7B5147161801210091E644 /* lxu_simd.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_simd.cpp; path = ../LXSDK/common/lxu_simd.cpp; sourceTree = "<group>"; };
-		4A7B5148161801210091E644 /* lxu_surface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_surface.cpp; path = ../LXSDK/common/lxu_surface.cpp; sourceTree = "<group>"; };
-		4A7B5149161801210091E644 /* util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = util.cpp; path = ../LXSDK/common/util.cpp; sourceTree = "<group>"; };
 		4AA1DDE6198C5193008C6D2E /* aaOcean_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = aaOcean_init.cpp; sourceTree = "<group>"; };
 		4AA1DDE7198C5193008C6D2E /* aaOcean_init.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aaOcean_init.h; sourceTree = "<group>"; };
 		4AA1DDEA198C524B008C6D2E /* aaOcean_texture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = aaOcean_texture.cpp; sourceTree = "<group>"; };
 		4AA1DDEB198C524B008C6D2E /* aaOcean_texture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aaOcean_texture.h; sourceTree = "<group>"; };
+		4AC23BF41BA208570094083D /* clean.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = clean.cpp; path = ../LXSDK/common/clean.cpp; sourceTree = "<group>"; };
+		4AC23BF51BA208570094083D /* cwrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = cwrap.cpp; path = ../LXSDK/common/cwrap.cpp; sourceTree = "<group>"; };
+		4AC23BF61BA208570094083D /* lxu_attrdesc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_attrdesc.cpp; path = ../LXSDK/common/lxu_attrdesc.cpp; sourceTree = "<group>"; };
+		4AC23BF71BA208570094083D /* lxu_attributes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_attributes.cpp; path = ../LXSDK/common/lxu_attributes.cpp; sourceTree = "<group>"; };
+		4AC23BF81BA208570094083D /* lxu_command.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_command.cpp; path = ../LXSDK/common/lxu_command.cpp; sourceTree = "<group>"; };
+		4AC23BF91BA208570094083D /* lxu_deform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_deform.cpp; path = ../LXSDK/common/lxu_deform.cpp; sourceTree = "<group>"; };
+		4AC23BFA1BA208570094083D /* lxu_format.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_format.cpp; path = ../LXSDK/common/lxu_format.cpp; sourceTree = "<group>"; };
+		4AC23BFB1BA208570094083D /* lxu_geometry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_geometry.cpp; path = ../LXSDK/common/lxu_geometry.cpp; sourceTree = "<group>"; };
+		4AC23BFC1BA208570094083D /* lxu_log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_log.cpp; path = ../LXSDK/common/lxu_log.cpp; sourceTree = "<group>"; };
+		4AC23BFD1BA208570094083D /* lxu_math.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_math.cpp; path = ../LXSDK/common/lxu_math.cpp; sourceTree = "<group>"; };
+		4AC23BFE1BA208570094083D /* lxu_message.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_message.cpp; path = ../LXSDK/common/lxu_message.cpp; sourceTree = "<group>"; };
+		4AC23BFF1BA208570094083D /* lxu_modifier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_modifier.cpp; path = ../LXSDK/common/lxu_modifier.cpp; sourceTree = "<group>"; };
+		4AC23C001BA208570094083D /* lxu_parser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_parser.cpp; path = ../LXSDK/common/lxu_parser.cpp; sourceTree = "<group>"; };
+		4AC23C011BA208570094083D /* lxu_prefvalue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_prefvalue.cpp; path = ../LXSDK/common/lxu_prefvalue.cpp; sourceTree = "<group>"; };
+		4AC23C021BA208570094083D /* lxu_queries.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_queries.cpp; path = ../LXSDK/common/lxu_queries.cpp; sourceTree = "<group>"; };
+		4AC23C031BA208570094083D /* lxu_scene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_scene.cpp; path = ../LXSDK/common/lxu_scene.cpp; sourceTree = "<group>"; };
+		4AC23C041BA208570094083D /* lxu_select.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_select.cpp; path = ../LXSDK/common/lxu_select.cpp; sourceTree = "<group>"; };
+		4AC23C051BA208570094083D /* lxu_simd.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_simd.cpp; path = ../LXSDK/common/lxu_simd.cpp; sourceTree = "<group>"; };
+		4AC23C061BA208570094083D /* lxu_surface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_surface.cpp; path = ../LXSDK/common/lxu_surface.cpp; sourceTree = "<group>"; };
+		4AC23C071BA208570094083D /* lxu_tableau.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_tableau.cpp; path = ../LXSDK/common/lxu_tableau.cpp; sourceTree = "<group>"; };
+		4AC23C081BA208570094083D /* lxu_vector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lxu_vector.cpp; path = ../LXSDK/common/lxu_vector.cpp; sourceTree = "<group>"; };
+		4AC23C091BA208570094083D /* util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = util.cpp; path = ../LXSDK/common/util.cpp; sourceTree = "<group>"; };
 		4AD9E0DB198D1E5B0013A4C6 /* aaOcean_chanmod.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = aaOcean_chanmod.cpp; sourceTree = "<group>"; };
 		4AD9E0DC198D1E5B0013A4C6 /* aaOcean_chanmod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aaOcean_chanmod.h; sourceTree = "<group>"; };
 		4AD9E0E4198DBB050013A4C6 /* libfftw3f_threads.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfftw3f_threads.a; path = dependencies/lib/osx/libfftw3f_threads.a; sourceTree = "<group>"; };
@@ -150,25 +156,28 @@
 		4AED76BD161800B100588EB3 /* common */ = {
 			isa = PBXGroup;
 			children = (
-				4A7B5137161801210091E644 /* clean.cpp */,
-				4A7B5138161801210091E644 /* cwrap.cpp */,
-				4A7B5139161801210091E644 /* lxu_attributes.cpp */,
-				4A7B513A161801210091E644 /* lxu_command.cpp */,
-				4A7B513B161801210091E644 /* lxu_deform.cpp */,
-				4A7B513C161801210091E644 /* lxu_format.cpp */,
-				4A7B513D161801210091E644 /* lxu_geometry.cpp */,
-				4A7B513E161801210091E644 /* lxu_log.cpp */,
-				4A7B513F161801210091E644 /* lxu_math.cpp */,
-				4A7B5140161801210091E644 /* lxu_message.cpp */,
-				4A7B5141161801210091E644 /* lxu_modifier.cpp */,
-				4A7B5142161801210091E644 /* lxu_parser.cpp */,
-				4A7B5143161801210091E644 /* lxu_prefvalue.cpp */,
-				4A7B5144161801210091E644 /* lxu_queries.cpp */,
-				4A7B5145161801210091E644 /* lxu_scene.cpp */,
-				4A7B5146161801210091E644 /* lxu_select.cpp */,
-				4A7B5147161801210091E644 /* lxu_simd.cpp */,
-				4A7B5148161801210091E644 /* lxu_surface.cpp */,
-				4A7B5149161801210091E644 /* util.cpp */,
+				4AC23BF41BA208570094083D /* clean.cpp */,
+				4AC23BF51BA208570094083D /* cwrap.cpp */,
+				4AC23BF61BA208570094083D /* lxu_attrdesc.cpp */,
+				4AC23BF71BA208570094083D /* lxu_attributes.cpp */,
+				4AC23BF81BA208570094083D /* lxu_command.cpp */,
+				4AC23BF91BA208570094083D /* lxu_deform.cpp */,
+				4AC23BFA1BA208570094083D /* lxu_format.cpp */,
+				4AC23BFB1BA208570094083D /* lxu_geometry.cpp */,
+				4AC23BFC1BA208570094083D /* lxu_log.cpp */,
+				4AC23BFD1BA208570094083D /* lxu_math.cpp */,
+				4AC23BFE1BA208570094083D /* lxu_message.cpp */,
+				4AC23BFF1BA208570094083D /* lxu_modifier.cpp */,
+				4AC23C001BA208570094083D /* lxu_parser.cpp */,
+				4AC23C011BA208570094083D /* lxu_prefvalue.cpp */,
+				4AC23C021BA208570094083D /* lxu_queries.cpp */,
+				4AC23C031BA208570094083D /* lxu_scene.cpp */,
+				4AC23C041BA208570094083D /* lxu_select.cpp */,
+				4AC23C051BA208570094083D /* lxu_simd.cpp */,
+				4AC23C061BA208570094083D /* lxu_surface.cpp */,
+				4AC23C071BA208570094083D /* lxu_tableau.cpp */,
+				4AC23C081BA208570094083D /* lxu_vector.cpp */,
+				4AC23C091BA208570094083D /* util.cpp */,
 			);
 			name = common;
 			sourceTree = "<group>";
@@ -295,25 +304,28 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4A7B514A161801210091E644 /* clean.cpp in Sources */,
-				4A7B514B161801210091E644 /* cwrap.cpp in Sources */,
-				4A7B514C161801210091E644 /* lxu_attributes.cpp in Sources */,
-				4A7B514D161801210091E644 /* lxu_command.cpp in Sources */,
-				4A7B514E161801210091E644 /* lxu_deform.cpp in Sources */,
-				4A7B514F161801210091E644 /* lxu_format.cpp in Sources */,
-				4A7B5150161801210091E644 /* lxu_geometry.cpp in Sources */,
-				4A7B5151161801210091E644 /* lxu_log.cpp in Sources */,
-				4A7B5152161801210091E644 /* lxu_math.cpp in Sources */,
-				4A7B5153161801210091E644 /* lxu_message.cpp in Sources */,
-				4A7B5154161801210091E644 /* lxu_modifier.cpp in Sources */,
-				4A7B5155161801210091E644 /* lxu_parser.cpp in Sources */,
-				4A7B5156161801210091E644 /* lxu_prefvalue.cpp in Sources */,
-				4A7B5157161801210091E644 /* lxu_queries.cpp in Sources */,
-				4A7B5158161801210091E644 /* lxu_scene.cpp in Sources */,
-				4A7B5159161801210091E644 /* lxu_select.cpp in Sources */,
-				4A7B515A161801210091E644 /* lxu_simd.cpp in Sources */,
-				4A7B515B161801210091E644 /* lxu_surface.cpp in Sources */,
-				4A7B515C161801210091E644 /* util.cpp in Sources */,
+				4AC23C0C1BA208570094083D /* lxu_attrdesc.cpp in Sources */,
+				4AC23C0A1BA208570094083D /* clean.cpp in Sources */,
+				4AC23C0F1BA208570094083D /* lxu_deform.cpp in Sources */,
+				4AC23C0E1BA208570094083D /* lxu_command.cpp in Sources */,
+				4AC23C191BA208570094083D /* lxu_scene.cpp in Sources */,
+				4AC23C171BA208570094083D /* lxu_prefvalue.cpp in Sources */,
+				4AC23C101BA208570094083D /* lxu_format.cpp in Sources */,
+				4AC23C121BA208570094083D /* lxu_log.cpp in Sources */,
+				4AC23C161BA208570094083D /* lxu_parser.cpp in Sources */,
+				4AC23C1E1BA208570094083D /* lxu_vector.cpp in Sources */,
+				4AC23C111BA208570094083D /* lxu_geometry.cpp in Sources */,
+				4AC23C181BA208570094083D /* lxu_queries.cpp in Sources */,
+				4AC23C0D1BA208570094083D /* lxu_attributes.cpp in Sources */,
+				4AC23C1C1BA208570094083D /* lxu_surface.cpp in Sources */,
+				4AC23C151BA208570094083D /* lxu_modifier.cpp in Sources */,
+				4AC23C1F1BA208570094083D /* util.cpp in Sources */,
+				4AC23C1D1BA208570094083D /* lxu_tableau.cpp in Sources */,
+				4AC23C0B1BA208570094083D /* cwrap.cpp in Sources */,
+				4AC23C1B1BA208570094083D /* lxu_simd.cpp in Sources */,
+				4AC23C141BA208570094083D /* lxu_message.cpp in Sources */,
+				4AC23C1A1BA208570094083D /* lxu_select.cpp in Sources */,
+				4AC23C131BA208570094083D /* lxu_math.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

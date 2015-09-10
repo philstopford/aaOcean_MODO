@@ -44,8 +44,6 @@ class OceanData {
         bool m_doFoam; // default is FALSE for now.
         bool m_doNormals; // default is FALSE
         float m_time;
-        float minX, maxX, minY, maxY, minZ, maxZ; // bounds
-        float maxXDisp, maxYDisp, maxZDisp; // displacement limits
     
         bool operator == (const OceanData &oceanData) const {
             return (this->m_resolution == oceanData.m_resolution &&
@@ -148,9 +146,6 @@ class aaOceanChanMod
         unsigned m_idx_eigenminusY;
         unsigned m_idx_eigenminusZ;
     
-        unsigned m_idx_minX, m_idx_maxX, m_idx_minY, m_idx_maxY, m_idx_minZ, m_idx_maxZ;
-        unsigned m_idx_normalizationX, m_idx_normalizationY, m_idx_normalizationZ;
-
         // Indices for ChanMod
         unsigned cm_idx_x;
         unsigned cm_idx_z;
@@ -182,9 +177,6 @@ class aaOceanChanMod
         unsigned cm_idx_eigenminusX;
         unsigned cm_idx_eigenminusY;
         unsigned cm_idx_eigenminusZ;
-    
-        unsigned cm_idx_minX, cm_idx_maxX, cm_idx_minY, cm_idx_maxY, cm_idx_minZ, cm_idx_maxZ;
-        unsigned cm_idx_normalizationX, cm_idx_normalizationY, cm_idx_normalizationZ;
 
 };
 

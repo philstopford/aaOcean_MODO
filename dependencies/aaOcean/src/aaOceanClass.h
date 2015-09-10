@@ -61,10 +61,6 @@ public:
 	int getResolution();
 	char* getState();
 	void getFoamBounds(float& outBoundsMin, float& outBoundsMax);
-    void getBounds(float& outCBoundsXMin, float& outCBoundsXMax, float& outCBoundsZMin, float& outCBoundsZMax, float& outHFBoundsYMin, float& outHFBoundsYMax);
-    void setMinMax(float& maxXDisp,
-                   float& maxYDisp,
-                   float& maxZDisp);
 
 //private:
 	int		m_resolution;
