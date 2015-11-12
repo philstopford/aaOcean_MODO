@@ -282,7 +282,9 @@ void CInfluence::Offset (CLxUser_Point &point, float weight, LXtFVector	offset)
     float result[3];
     float p[2];
     p[0] = (float)posF[0];
-    p[1] = (float)posF[2];
+    // Note the flip of V sign as aaOcean modifies the sign again internally due to SI/Maya coordinate system.
+    // This approach appears to result in a better ocean characteristic.
+    p[1] = -(float)posF[2];
 
     // Maya code for reference :
 	// get height field
@@ -322,6 +324,7 @@ void CInfluence::Offset (CLxUser_Point &point, float weight, LXtFVector	offset)
     
     // We need to scale our coordinates by the ocean size since aaOcean expects 0-1 ranges incoming (it was built as a texture)
     // Let's get the Y displacement first
+
     result[0] = result[1] = result[2] = 0.0;
     result[1] = cur.m_pOcean->getOceanData(p[0]/cur.m_pOcean->m_oceanScale,p[1]/cur.m_pOcean->m_oceanScale, aaOcean::eHEIGHTFIELD);
     if(cur.m_pOcean->isChoppy())

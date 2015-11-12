@@ -114,9 +114,11 @@ class aaOceanChanMod
         void			 cmod_Cleanup (void *data) LXx_OVERRIDE;
         LxResult		 cmod_Evaluate (ILxUnknownID cmod, ILxUnknownID attr, void *data) LXx_OVERRIDE;
 
+        bool tone;
         // Indices for ChannelLookup, Flags, etc.
         unsigned m_idx_x;
         unsigned m_idx_z;
+        unsigned m_idx_tone;
         unsigned m_idx_resolution;
         unsigned m_idx_oceanSize;
         unsigned m_idx_waveHeight;
@@ -149,6 +151,7 @@ class aaOceanChanMod
         // Indices for ChanMod
         unsigned cm_idx_x;
         unsigned cm_idx_z;
+        unsigned cm_idx_tone;
         unsigned cm_idx_resolution;
         unsigned cm_idx_oceanSize;
         unsigned cm_idx_waveHeight;

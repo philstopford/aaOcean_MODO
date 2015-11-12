@@ -319,7 +319,10 @@ void aaOceanTexture::vtx_Evaluate (ILxUnknownID etor, int *idx, ILxUnknownID vec
 	// Feeding the object position instead of UV values into aaOcean in order to get the same results as the deformer
 	// Ultimately I think using the UVs would be better
     float u_oPos = sPosition->oPos[0] / oceanData_->m_oceanSize;
-    float v_oPos = sPosition->oPos[2] / oceanData_->m_oceanSize;
+    
+    // Flip the V sign as aaOcean modifies the sign again internally due to SI/Maya coordinate system.
+    // This approach appears to result in a better ocean characteristic.
+    float v_oPos = -sPosition->oPos[2] / oceanData_->m_oceanSize;
 
     tOut->direct   = 1;
     // The intent of tInpDsp->enable isn't entirely clear. The docs, such as they are, indicate that the texture should set this when outputting displacement.
