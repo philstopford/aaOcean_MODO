@@ -72,6 +72,9 @@ LxResult CPackage::pkg_SetupChannels(ILxUnknownID addChan)
 
 	ac.NewChannel  (Cs_MORPH_MAPNAME,	LXsTYPE_VERTMAPNAME);
 
+    ac.NewChannel  ("tone",		LXsTYPE_BOOLEAN);
+    ac.SetDefault  (0.0, 1);
+
     ac.NewChannel  ("resolution",	LXsTYPE_INTEGER);
 	ac.SetDefault  (0.0, 4);
     ac.SetHint(hint_resolution);
@@ -175,6 +178,7 @@ void CChanState::Attach (CLxUser_Evaluation	&eval, ILxUnknownID item)
 {
     eval.AddChan (item, "enable");
     eval.AddChan (item, Cs_MORPH_MAPNAME);
+    eval.AddChan (item, "tone");
     eval.AddChan (item, "resolution");
 	eval.AddChan (item, "oceanSize");
 	eval.AddChan (item, "waveHeight");
@@ -206,7 +210,9 @@ void CChanState::Read (CLxUser_Attributes &attr, unsigned index)
 	{
         attr.String (index++, name);
 		
-		resolution  = attr.Int  (index++);
+        tone = attr.Bool (index++);
+
+        resolution  = attr.Int  (index++);
 		if(resolution > 12)
         {
             resolution = 12;
@@ -329,6 +335,10 @@ void CInfluence::Offset (CLxUser_Point &point, float weight, LXtFVector	offset)
     LXtFVector	 tmp;
 
     lx::MatrixMultiply (tmp, cur.xfrm, result);
+    if (cur.tone)
+    {
+        LXx_VSCL(tmp, -1);
+    }
     LXx_VSCL3 (offset, tmp, weight);
 }
 
@@ -355,6 +365,7 @@ LxResult CModifierElement::EvalCache (CLxUser_Evaluation &eval, CLxUser_Attribut
 	//early out
 	if(!infl->cur.enabled)
         return LXe_OK;
+    tone = infl->cur.tone;
     resolution = infl->cur.resolution;
     oceanSize = infl->cur.oceanSize;
     waveHeight = infl->cur.waveHeight;

@@ -3,6 +3,8 @@
 #include <fstream>
 #include <assert.h>
 #include <lxvmath.h>
+#include <lx_vector.hpp>
+#include <lxu_matrix.hpp>
 
 using namespace aaOceanTextureNamespace;
 
@@ -22,6 +24,7 @@ LXtTagInfoDesc	 aaOceanTexture::descInfo[] = {
 aaOceanTexture::aaOceanTexture ()
 {
     my_type = LXiTYPE_NONE;
+	dispAmplitude = 0.0;
 }
 
 aaOceanTexture::~aaOceanTexture ()
@@ -78,6 +81,9 @@ LxResult aaOceanTexture::vtx_SetupChannels (ILxUnknownID addChan)
 {
 	CLxUser_AddChannel	 ac (addChan);
 
+    ac.NewChannel("tone", LXsTYPE_BOOLEAN);
+    ac.SetDefault(0.0, 1);
+    
     ac.NewChannel  ("outputType",	LXsTYPE_INTEGER);
 	ac.SetDefault  (0.0, 0);
     ac.SetHint(hint_outputType);
@@ -129,6 +135,9 @@ LxResult aaOceanTexture::vtx_SetupChannels (ILxUnknownID addChan)
 	ac.SetDefault  (0.0, 0);
     ac.SetHint(hint_boolLimit);
 
+	//ac.NewChannel("div", LXsTYPE_FLOAT);
+	//ac.SetDefault(50.0f, 0);
+
     return LXe_OK;
 }
 
@@ -140,6 +149,7 @@ LxResult aaOceanTexture::vtx_LinkChannels (ILxUnknownID eval, ILxUnknownID	item)
 {
 	CLxUser_Evaluation	 ev (eval);
 
+    m_idx_tone = ev.AddChan (item, "tone");
 	m_idx_outputType = ev.AddChan (item, "outputType");
 	m_idx_resolution = ev.AddChan (item, "resolution");
 	m_idx_oceanSize = ev.AddChan (item, "oceanSize");
@@ -156,7 +166,8 @@ LxResult aaOceanTexture::vtx_LinkChannels (ILxUnknownID eval, ILxUnknownID	item)
     m_idx_seed = ev.AddChan(item, "seed");
     m_idx_repeatTime = ev.AddChan(item, "repeatTime");
     m_idx_doFoam = ev.AddChan(item, "doFoam");
-    
+	//m_idx_div = ev.AddChan(item, "div");
+
 	// m_idx_time = ev.AddChan (item, "time");
 
     m_idx_time = ev.AddTime ();
@@ -164,6 +175,7 @@ LxResult aaOceanTexture::vtx_LinkChannels (ILxUnknownID eval, ILxUnknownID	item)
     tin_offset = pkt_service.GetOffset (LXsCATEGORY_SAMPLE, LXsP_TEXTURE_INPUT);
 	tinDsp_offset = pkt_service.GetOffset (LXsCATEGORY_SAMPLE, LXsP_DISPLACE);
     nrm_offset  = pkt_service.GetOffset (LXsCATEGORY_SAMPLE, LXsP_SURF_NORMAL);
+    pos_offset  = pkt_service.GetOffset (LXsCATEGORY_SAMPLE, LXsP_SAMPLE_POSITION);
 
     return LXe_OK;
 }
@@ -178,6 +190,8 @@ LxResult aaOceanTexture::vtx_ReadChannels(ILxUnknownID attr, void  **ppvData)
 
     std::unique_ptr<OceanData> newOceanData(new OceanData());
 
+    tone = at.Bool(m_idx_tone);
+    
     newOceanData->m_outputType = at.Int(m_idx_outputType);
 	if(newOceanData->m_outputType > 6)
     {
@@ -223,60 +237,12 @@ LxResult aaOceanTexture::vtx_ReadChannels(ILxUnknownID attr, void  **ppvData)
 	newOceanData->m_doNormals = false; // disabled due to Vector issues (bool) at.Int(m_idx_doNormals);
     
     newOceanData->m_time = at.Float(m_idx_time);
+
+	//newOceanData->m_div = at.Float(m_idx_div);
     
     maybeResetOceanData(std::move(newOceanData));
 
 	return LXe_OK;
-}
-
-// Unused in the aaOcean code.
-/*
-inline void mwnormalize(float *vec) 
-{
-	double magSq = vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2];
-	if (magSq > 0.0f) 
-	{ // check for divide-by-zero
-		double oneOverMag = 1.0 / sqrt(magSq);
-		vec[0] *= oneOverMag;
-		vec[1] *= oneOverMag;
-		vec[2] *= oneOverMag;
-	}
-}
-*/	
-
-inline float remapValue(float value, float min, float max, float min2, float max2)
-{
-	return min2 + (value - min) * (max2 - min2) / (max - min);
-}
-
-void VNormalizeF(LXtFVector &v)
-{
-    double    x;
-    
-    x = LXx_VDOT (v, v);
-    if (x > 0.0) {
-        x = 1.0 / sqrt (x);
-        LXx_VSCL (v, x);
-    }
-}
-
-void VOrthogonalizeF(LXtFVector &v, LXtFVector &n)
-{
-    double    f;
-    
-    f = - LXx_VDOT (v, n);
-    LXx_VADDS (v, n, f);
-}
-
-void NUVBasisF(LXtFVector &norm, LXtFVector &du, LXtFVector &dv)
-{
-    VOrthogonalizeF (du, norm);
-    VNormalizeF (du);
-    VOrthogonalizeF (dv, du);
-    VOrthogonalizeF (dv, norm);
-    VOrthogonalizeF (dv, du);
-    VOrthogonalizeF (dv, norm);
-    VNormalizeF (dv);
 }
 
 void aaOceanTexture::maybeResetOceanData(std::unique_ptr<OceanData> newOceanData) {
@@ -298,7 +264,7 @@ void aaOceanTexture::maybeResetOceanData(std::unique_ptr<OceanData> newOceanData
                            oceanData_->m_waveReflection,
                            oceanData_->m_waveSpeed,
                            oceanData_->m_waveHeight * 100,
-                           oceanData_->m_waveChop,
+                           oceanData_->m_waveChop * 200,
                            oceanData_->m_time,
                            oceanData_->m_repeatTime,
                            oceanData_->m_doFoam,
@@ -308,196 +274,123 @@ void aaOceanTexture::maybeResetOceanData(std::unique_ptr<OceanData> newOceanData
 }
 
 
-#ifdef MODO701
-void aaOceanTexture::vtx_Evaluate (ILxUnknownID vector, LXpTextureOutput *tOut, void *data)
-#else
 void aaOceanTexture::vtx_Evaluate (ILxUnknownID etor, int *idx, ILxUnknownID vector, LXpTextureOutput *tOut, void *data)
-#endif
 {
     LXpTextureInput		*tInp;
 	LXpDisplace *tInpDsp;
+    LXpSampleSurfNormal	 *sNrm;
+    LXpSamplePosition	 *sPosition;
 
     tInp = (LXpTextureInput *) pkt_service.FastPacket (vector, tin_offset);
 	tInpDsp = (LXpDisplace *) pkt_service.FastPacket (vector, tinDsp_offset);
+    sNrm	  = (LXpSampleSurfNormal*) pkt_service.FastPacket(vector, nrm_offset);
+    sPosition = (st_LXpSamplePosition*) pkt_service.FastPacket(vector, pos_offset);
     
-    // Maya code for reference :
-	// get height field
-    /*
-     worldSpaceVec[1] = pOcean->getOceanData(u[i], v[i], aaOcean::eHEIGHTFIELD);
-     if(pOcean->isChoppy())
-     {
-     // get x and z displacement
-     worldSpaceVec[0] = pOcean->getOceanData(u[i], v[i], aaOcean::eCHOPX);
-     worldSpaceVec[2] = pOcean->getOceanData(u[i], v[i], aaOcean::eCHOPZ);
-     
-     if(foam)
-     {
-     if(foundEigenVector)
-     {
-     r = pOcean->getOceanData(u[i], v[i], aaOcean::eEIGENMINUSX);
-     g = pOcean->getOceanData(u[i], v[i], aaOcean::eEIGENMINUSZ);
-     b = pOcean->getOceanData(u[i], v[i], aaOcean::eEIGENPLUSX);
-     a = pOcean->getOceanData(u[i], v[i], aaOcean::eEIGENPLUSZ);
-     colArrayEigenVector.set(i, r, g, b, a);
-     }
-     if(foundEigenValue)
-     {
-     if(invert)
-     r = 1.0f - pOcean->getOceanData(u[i], v[i], aaOcean::eFOAM);
-     else
-     r = pOcean->getOceanData(u[i], v[i], aaOcean::eFOAM);
-     
-     colArrayEigenValue.set(i, r, r, r);
-     }
-     }
-     }
-     
-     localSpaceVec = worldSpaceVec * transform;
-     verts[i] += localSpaceVec;
-     */
+	if (tInpDsp->amplitude != 0)
+    {
+        dispAmplitude = tInpDsp->amplitude;
+    }
+    
+	if (dispAmplitude <= 0.0)
+		return;
+
+    // Ensure that a valid normal is given
+    if ( !LXx_VNEZERO(sNrm->gNorm) )
+        return;
+
+	if (!LXx_VNEZERO(tInp->dpdu) || !LXx_VNEZERO(tInp->dpdv) )
+		return;
+
+    CLxVector dpdu = CLxVector (tInp->dpdu).normal();
+    CLxVector dpdv = CLxVector (tInp->dpdv).normal();
+    CLxVector norm = (dpdu ^ dpdv).normal();
+    
+    CLxMatrix4 tangentMatrix = CLxMatrix4();
+    
+    LXx_VCPY(tangentMatrix[0], dpdu.v);
+    LXx_VCPY(tangentMatrix[1], dpdv.v);
+    LXx_VCPY(tangentMatrix[2], norm.v);
 
     float result[3]; // vector for the color output.
     result[0] = result[1] = result[2] = 0.0;
     float value = 0.0; // value output
     float alpha = 1.0; // alpha output
 
-    float x_pos = tInp->uvw[0]/oceanData_->m_oceanSize;
-    float z_pos = tInp->uvw[2]/oceanData_->m_oceanSize;
+	// Feeding the object position instead of UV values into aaOcean in order to get the same results as the deformer
+	// Ultimately I think using the UVs would be better
+    float u_oPos = sPosition->oPos[0] / oceanData_->m_oceanSize;
+    float v_oPos = sPosition->oPos[2] / oceanData_->m_oceanSize;
 
     tOut->direct   = 1;
     // The intent of tInpDsp->enable isn't entirely clear. The docs, such as they are, indicate that the texture should set this when outputting displacement.
     tInpDsp->enable = true;
-
-    // aaOceans works expecting 0-1 input range for UVs. To fit our ocean size into this 0-1 space, we need to divide it down. This is a first pass implementation.
-    // The approach may change based on user feedback and subsequent refinement.
     
     if(oceanData_->m_outputType == 0) // normal displacement texture configuration
     {
-        result[1] = mOcean_.getOceanData(x_pos, z_pos, aaOcean::eHEIGHTFIELD);
+		result[1] = mOcean_.getOceanData(u_oPos, v_oPos, aaOcean::eHEIGHTFIELD);/* +w_oPos;*/
         if (mOcean_.isChoppy())
         {
-            result[0] = mOcean_.getOceanData(x_pos, z_pos, aaOcean::eCHOPX);
-            result[2] = mOcean_.getOceanData(x_pos, z_pos, aaOcean::eCHOPZ);
+            result[0] = mOcean_.getOceanData(u_oPos, v_oPos, aaOcean::eCHOPX);
+            result[2] = mOcean_.getOceanData(u_oPos, v_oPos, aaOcean::eCHOPZ);
         } else {
             result[0] = 0.0;
             result[2] = 0.0;
         }
-
-        /*if (LXx_VLEN(result) != 0)
-        {
-            LXx_VSCL(result,1/LXx_VLEN(result));
-        }*/
-        if(oceanData_->m_outputType == 0) // normal displacement texture configuration
-        {
-            // Fit to 0-1 range, with 0.5 being no displacement
-            result[0] = (result[0]+1)/2;
-            result[1] = (result[1]+1)/2;
-            result[2] = (result[2]+1)/2;
-
-            value = result[1];// * rd->m_waveHeight; // in case displacement is used rather than vector displacement.
-        }
-
-        if((oceanData_->m_outputType == 4) || (oceanData_->m_outputType == 5) || (oceanData_->m_outputType == 6))// tangent conversion v1
-        {
-            LXpSampleSurfNormal *sNrm = (LXpSampleSurfNormal*) pkt_service.FastPacket (vector, nrm_offset);
-            LXtFVector surfaceNormal, cu, cv;
-            LXx_VCPY (surfaceNormal, sNrm->wNorm0);
-
-            LXtFVector objectSpaceVector;
-            LXx_VCPY(objectSpaceVector, result);
-            
-            double objectSpaceVectorMag = LXx_VLEN(objectSpaceVector);
-            
-            if (oceanData_->m_outputType == 4)
-            {
-                LXtFVector projectedResult;
-                
-                // From http://www.euclideanspace.com/maths/geometry/elements/plane/lineOnPlane/
-                LXx_VCROSS(projectedResult, objectSpaceVector,surfaceNormal);
-                LXx_VSCL(projectedResult, 1/(objectSpaceVectorMag));
-                LXx_VCROSS(projectedResult, objectSpaceVector, projectedResult);
-                LXx_VSCL(projectedResult, 1/(objectSpaceVectorMag));
-                
-                LXtFVector projectedOnNormal;
-                LXx_VCPY(projectedOnNormal, objectSpaceVector);
-                LXx_VSCL(projectedOnNormal, 1/(objectSpaceVectorMag * objectSpaceVectorMag));
-                LXx_VSCL(projectedOnNormal, LXx_VDOT(surfaceNormal, objectSpaceVector));
-
-                result[0] = projectedResult[0];
-                result[1] = projectedResult[2];
-                result[2] = projectedResult[1];
-                value = LXx_VLEN(projectedResult); // sqrt(LXx_VDOT(projectedOnNormal, projectedOnNormal));
-            }
-            if (oceanData_->m_outputType == 5)
-            {
-                LXtVector tan;
-                tan[0] = LXx_VDOT (tInp->dpdu, objectSpaceVector);
-                tan[1] = LXx_VDOT (tInp->dpdv, objectSpaceVector);
-                tan[2] = LXx_VDOT (surfaceNormal, objectSpaceVector);
-                
-                result[0] = tan[0];
-                result[2] = tan[1];
-                result[1] = tan[2];
-                value = LXx_VLEN(tan); // sqrt(LXx_VDOT(projectedOnNormal, projectedOnNormal));
-            }
-            if (oceanData_->m_outputType == 6)
-            {
-                // LXtFVector rgb;
-                LXx_VCPY(cu, tInp->dpdu);
-                LXx_VCPY(cv, tInp->dpdv);
-                
-                VNormalizeF(cu);
-                VNormalizeF(cv);
-                
-                NUVBasisF(surfaceNormal, cu, cv);
-                
-                LXtFMatrix myMatrix;
-                for (int i = 0; i < 3; i++)
-                {
-                    myMatrix[0][i] = cu[i];
-                    myMatrix[1][i] = cv[i];
-                    myMatrix[2][i] = surfaceNormal[i];
-                }
-                
-                lx::MatrixTranspose(myMatrix);
-                
-                lx::MatrixMultiply(result, myMatrix, objectSpaceVector);
-                
-                // LXx_VCPY(result, rgb);
-            }
-        }
+        value = result[1];// * rd->m_waveHeight; // in case displacement is used rather than vector displacement.
     }
     if(oceanData_->m_outputType == 1) // foam map requested
     {
         if(oceanData_->m_doFoam == true)
         {
-            value = mOcean_.getOceanData(x_pos, z_pos, aaOcean::eFOAM);
+            value = mOcean_.getOceanData(u_oPos, v_oPos, aaOcean::eFOAM);
         }
     }
     if(oceanData_->m_outputType == 2) // Eigenvalues - minus
     {
         if(oceanData_->m_doFoam == true)
         {
-            result[0] = mOcean_.getOceanData(x_pos, z_pos, aaOcean::eEIGENMINUSX);
-            result[2] = mOcean_.getOceanData(x_pos, z_pos, aaOcean::eEIGENMINUSZ);
+            result[0] = mOcean_.getOceanData(u_oPos, v_oPos, aaOcean::eEIGENMINUSX);
+            result[2] = mOcean_.getOceanData(u_oPos, v_oPos, aaOcean::eEIGENMINUSZ);
         }
     }
     if(oceanData_->m_outputType == 3) // Eigenvalues - plus
     {
         if(oceanData_->m_doFoam == true)
         {
-            result[0] = mOcean_.getOceanData(x_pos, z_pos, aaOcean::eEIGENPLUSX);
-            result[2] = mOcean_.getOceanData(x_pos, z_pos, aaOcean::eEIGENPLUSZ);
+            result[0] = mOcean_.getOceanData(u_oPos, v_oPos, aaOcean::eEIGENPLUSX);
+            result[2] = mOcean_.getOceanData(u_oPos, v_oPos, aaOcean::eEIGENPLUSZ);
         }
     }
+
     // Note that modo expects textures to output the right kind of data based on the context. This is the reason for checking against
     // LXi_TFX_COLOR in the context below. If we aren't driving a color, we output a value instead.
     if (LXi_TFX_COLOR == tInp->context)
     {
-        tOut->color[0][0] = result[0];
-        tOut->color[0][1] = result[1];
-        tOut->color[0][2] = result[2];
+        // This is the new position we want to apply in world space
+        CLxVector destPosition(result[0], result[1], result[2]);
+		double len = CLxVector(destPosition - CLxVector(sPosition->oPos)).length();
+		//CLxVector destPosition(0, 0.1, 0);
+
+        CLxMatrix4 positionMatrix = CLxMatrix4();
+        
+		// This is to avoid clipping. Not sure if this is the correct parameter to use for the purpose.
+		// I eyeballed the scaling value of 200, it seems to match the deformer. Not sure where the difference comes from
+		// This effectively ignores the "Displacement Distance" value and removes the clipping if big enough.		
+
+		positionMatrix.setTranslation((destPosition - CLxVector(sPosition->oPos)) / (dispAmplitude * 200.0) );
+        
+        CLxMatrix4 matResult = positionMatrix * tangentMatrix.inverse();        
+
+		CLxVector outVector = matResult.getTranslation();
+        
+        if (tone)
+        {
+            LXx_VSCL(outVector, -1.0f);
+        }
+
+        LXx_VCPY (tOut->color[0], outVector);
     }
+    
     tOut->value[0] = value;
     tOut->alpha[0] = alpha;
     bool debugMe = false;
@@ -505,11 +398,21 @@ void aaOceanTexture::vtx_Evaluate (ILxUnknownID etor, int *idx, ILxUnknownID vec
     {
         std::ofstream fout ("/Users/phil/aadebug_texture.csv", std::ios::app);
         std::string tmpString =
-        std::to_string(x_pos) + "," + std::to_string(z_pos) + "," +
+        std::to_string(u_oPos) + "," + std::to_string(v_oPos) + "," +
         std::to_string(result[0]) + "," + std::to_string(result[1]) + "," + std::to_string(result[2]) + "\n";
         fout << tmpString;
         fout.close();
     }
+}
+
+LxResult aaOceanTexture::vtx_Customize(ILxUnknownID customId, void **ppvData)
+{
+    CLxLoc_ValueTextureCustom	cust(customId);
+    cust.AddFeature(LXiTBLX_BASEFEATURE, LXsTBLX_FEATURE_NORMAL );
+    cust.AddFeature(LXiTBLX_BASEFEATURE, LXsTBLX_FEATURE_OBJPOS );
+    cust.AddFeature(LXiTBLX_BASEFEATURE, LXsTBLX_FEATURE_POS );
+    
+    return LXe_OK;
 }
 
 /*

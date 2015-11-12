@@ -13,6 +13,8 @@
 #include <string>
 #include <math.h>
 #include <float.h>
+#include <memory>
+#include <mutex>
 
 #include "aaOceanClass.h"
 
@@ -39,6 +41,7 @@ class OceanData {
         bool m_doFoam; // default is FALSE for now.
         bool m_doNormals; // default is FALSE
         float m_time;
+		//float m_div;
 
         bool operator == (const OceanData &oceanData) const {
             return (this->m_resolution == oceanData.m_resolution &&
@@ -57,6 +60,7 @@ class OceanData {
                     this->m_doFoam == oceanData.m_doFoam &&
                     this->m_doNormals == oceanData.m_doNormals &&
                     this->m_time == oceanData.m_time
+					//this->m_div == oceanData.m_div
                     ); // Check all the other values.
         }
         
@@ -101,18 +105,18 @@ class aaOceanTexture : public CLxImpl_ValueTexture
         LxResult		vtx_SetupChannels (ILxUnknownID addChan) LXx_OVERRIDE;
         LxResult		vtx_LinkChannels  (ILxUnknownID eval, ILxUnknownID item) LXx_OVERRIDE;
         LxResult		vtx_ReadChannels  (ILxUnknownID attr, void **ppvData) LXx_OVERRIDE;
-#ifdef MODO701
-        void			vtx_Evaluate      (ILxUnknownID vector, LXpTextureOutput *tOut, void *data) LXx_OVERRIDE;
-#else
         void			vtx_Evaluate      (ILxUnknownID etor, int *idx, ILxUnknownID vector, LXpTextureOutput *tOut, void *data) LXx_OVERRIDE;
-#endif
+
         void			vtx_Cleanup       (void *data) LXx_OVERRIDE;
+        LxResult		vtx_Customize(ILxUnknownID custom, void **ppvData) override;
 
 		LXtItemType		MyType ();
         CLxUser_PacketService	pkt_service;
-        unsigned		tin_offset,tinDsp_offset,nrm_offset;
+        unsigned		tin_offset,tinDsp_offset,nrm_offset,pos_offset;
         LXtItemType		my_type;
 
+        bool tone;
+        unsigned m_idx_tone;
         unsigned m_idx_outputType;
 		unsigned m_idx_resolution;
 		unsigned m_idx_oceanSize;
@@ -131,6 +135,7 @@ class aaOceanTexture : public CLxImpl_ValueTexture
         unsigned m_idx_doFoam;
         unsigned m_idx_doNormals;
 		unsigned m_idx_time;
+		//unsigned m_idx_div;
 
         int m_outputTypeCache;
         int		m_resolutionCache;
@@ -150,6 +155,8 @@ class aaOceanTexture : public CLxImpl_ValueTexture
         bool m_doFoamCache;
         bool m_doNormalsCache;
         float m_timeCache;
+    
+        float dispAmplitude;
 
 };
     void initialize ()

@@ -74,7 +74,7 @@ class CChanState : public CLxObject
 		double			 gain;
 		LXtMatrix		 xfrm;
 		bool			 enabled;
-
+        bool             tone;
         int				 resolution; // default is 4
 		float oceanSize; // default is 100.0
 		float waveHeight; // default is 2.0
@@ -127,6 +127,7 @@ class CModifierElement : public CLxItemModifierElement
     public:
 		unsigned	 index;
         aaOcean *pOcean;
+        bool tone;
         int				 resolution; // default is 4
         float oceanSize; // default is 100.0
         float waveHeight; // default is 2.0
@@ -147,6 +148,7 @@ class CModifierElement : public CLxItemModifierElement
 		CModifierElement()
 		{
 			pOcean = new aaOcean();
+            tone = true;
             resolution = 4;
             oceanSize =  100.0;
             waveHeight  = 2.0;
