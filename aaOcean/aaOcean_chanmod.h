@@ -63,7 +63,9 @@ class OceanData {
                     this->m_seed == oceanData.m_seed &&
                     this->m_doFoam == oceanData.m_doFoam &&
                     this->m_doNormals == oceanData.m_doNormals &&
-                    this->m_time == oceanData.m_time
+                    this->m_time == oceanData.m_time &&
+                    this->foamMax == oceanData.foamMax &&
+                    this->foamMin == oceanData.foamMin
                     ); // Check all the other values.
         }
         

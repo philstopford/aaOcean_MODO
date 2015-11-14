@@ -596,6 +596,8 @@ void aaOceanChanMod::maybeResetOceanData(std::unique_ptr<OceanData> newOceanData
                            oceanData_->m_repeatTime,
                            oceanData_->m_doFoam,
                            oceanData_->m_doNormals);
+            mOcean_.m_foamBoundmin = oceanData_->foamMin;
+            mOcean_.m_foamBoundmax = oceanData_->foamMax;
         }
     }
 }
