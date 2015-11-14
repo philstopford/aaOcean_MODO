@@ -175,6 +175,18 @@ aaOceanChanMod::cmod_Allocate (
         cm_idx_doFoam = index;
         index++;
 
+        // Lookup the index of the 'foamMin' channel and add as an input.
+        modItem.ChannelLookup ("foamMin", &m_idx_foamMin);
+        chanMod.AddInput (item, m_idx_foamMin);
+        cm_idx_foamMin = index;
+        index++;
+
+        // Lookup the index of the 'foamMax' channel and add as an input.
+        modItem.ChannelLookup ("foamMax", &m_idx_foamMax);
+        chanMod.AddInput (item, m_idx_foamMax);
+        cm_idx_foamMax = index;
+        index++;
+
         chanMod.AddTime ();
         cm_idx_time = index;
 
@@ -327,6 +339,16 @@ aaOceanChanMod::cmod_Flags (
         }
 
         if (LXx_OK (modItem.ChannelLookup ("doFoam", &chanIdx))) {
+            if (index == chanIdx)
+                return LXfCHMOD_INPUT;
+        }
+
+        if (LXx_OK (modItem.ChannelLookup ("foamMin", &chanIdx))) {
+            if (index == chanIdx)
+                return LXfCHMOD_INPUT;
+        }
+
+        if (LXx_OK (modItem.ChannelLookup ("foamMax", &chanIdx))) {
             if (index == chanIdx)
                 return LXfCHMOD_INPUT;
         }
@@ -485,6 +507,15 @@ aaOceanChanMod::cmod_Evaluate (
 
     chanMod.ReadInputInt (attr, cm_idx_doFoam, &iTemp);
     newOceanData->m_doFoam = (bool) iTemp;
+
+    chanMod.ReadInputFloat (attr, cm_idx_foamMax, &dTemp);
+    newOceanData->foamMax = (float) dTemp;
+
+    chanMod.ReadInputFloat (attr, cm_idx_foamMin, &dTemp);
+    newOceanData->foamMin = (float) dTemp;
+
+    chanMod.ReadInputFloat (attr, cm_idx_repeatTime, &dTemp);
+    newOceanData->m_repeatTime = (float) dTemp;
 
     newOceanData->m_doNormals = false;
 
@@ -665,6 +696,11 @@ aaOceanChanModPackage::pkg_SetupChannels (
         ac.NewChannel  ("doFoam",	LXsTYPE_INTEGER);
         ac.SetDefault  (0.0, 0);
     
+        ac.NewChannel  ("foamMin",	LXsTYPE_FLOAT);
+        ac.SetDefault  (0.0f, 0);
+
+        ac.NewChannel  ("foamMax",	LXsTYPE_FLOAT);
+        ac.SetDefault  (1.0f, 0);
         // Output channels below, this being defined in Flags and Allocate.
 
         // Note that these vectors end up having three channels (.X, .Y, .Z) elsewhere, leading to checks for displacement.X, etc. Don't get confused.
