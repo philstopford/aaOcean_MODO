@@ -48,8 +48,8 @@ aaOcean::aaOcean() :
     m_waveSpeed(1.0f),
     m_time(1.0f),
     m_loopTime(10000.0f),
-    m_foamBoundmin(1.0f),
-    m_foamBoundmax(1.0f),
+    m_foamBoundmin(-1000.0f),
+    m_foamBoundmax(1000.0f),
 
     // working arrays
     m_xCoord(0),
@@ -115,16 +115,6 @@ aaOcean::aaOcean(const aaOcean &cpy)
 aaOcean::~aaOcean()
 {
     clearArrays();
-}
-
-float aaOcean::getFoamMin()
-{
-    return m_foamBoundmin;
-}
-
-float aaOcean::getFoamMax()
-{
-    return m_foamBoundmax;
 }
 
 bool aaOcean::isChoppy()
@@ -244,7 +234,6 @@ void aaOcean::prepareOcean()
         if(!m_isFoamAllocated)
             allocateFoamArrays();
         evaluateJacobians();
-        // getFoamBounds(m_foamBoundmin, m_foamBoundmax);
     }
     sprintf(m_state,"%s\n[aaOcean Core] Working memory allocated: %.2f megabytes", m_state, float(m_memory)/1048576.f);
 }
@@ -840,10 +829,11 @@ void aaOcean::evaluateNormal()
 }
 */
 
+// Terribly slow for non-trivial cases.
 void aaOcean::getFoamBounds(float& outBoundsMin, float& outBoundsMax)
 {
-    outBoundsMax = 1.0f;
-    outBoundsMin =  1.0f;
+    outBoundsMax = 0.0f;
+    outBoundsMin =  0.0f;
 
     int index, n;
     n = m_resolution * m_resolution;
