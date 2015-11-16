@@ -45,7 +45,7 @@ class OceanData {
         bool m_doNormals; // default is FALSE
         float m_time;
         float foamMax;
-        float foamMin;
+        float foamRange;
     
         bool operator == (const OceanData &oceanData) const {
             return (this->m_resolution == oceanData.m_resolution &&
@@ -65,7 +65,7 @@ class OceanData {
                     this->m_doNormals == oceanData.m_doNormals &&
                     this->m_time == oceanData.m_time &&
                     this->foamMax == oceanData.foamMax &&
-                    this->foamMin == oceanData.foamMin
+                    this->foamRange == oceanData.foamRange
                     ); // Check all the other values.
         }
         
@@ -137,7 +137,7 @@ class aaOceanChanMod
         unsigned m_idx_oceanDepth;
         unsigned m_idx_repeatTime;
         unsigned m_idx_doFoam;
-        unsigned m_idx_foamMin;
+        unsigned m_idx_foamRange;
         unsigned m_idx_foamMax;
 
         unsigned m_idx_seed;
@@ -172,7 +172,7 @@ class aaOceanChanMod
         unsigned cm_idx_oceanDepth;
         unsigned cm_idx_repeatTime;
         unsigned cm_idx_doFoam;
-        unsigned cm_idx_foamMin;
+        unsigned cm_idx_foamRange;
         unsigned cm_idx_foamMax;
 
         unsigned cm_idx_seed;

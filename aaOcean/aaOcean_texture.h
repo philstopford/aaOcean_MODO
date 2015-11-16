@@ -42,7 +42,7 @@ class OceanData {
         bool m_doNormals; // default is FALSE
         float m_time;
         float foamMax;
-        float foamMin;
+        float foamRange;
 		//float m_div;
 
         bool operator == (const OceanData &oceanData) const {
@@ -63,7 +63,7 @@ class OceanData {
                     this->m_doNormals == oceanData.m_doNormals &&
                     this->m_time == oceanData.m_time &&
                     this->foamMax == oceanData.foamMax &&
-                    this->foamMin == oceanData.foamMin
+                    this->foamRange == oceanData.foamRange
 					//this->m_div == oceanData.m_div
                     ); // Check all the other values.
         }
@@ -137,7 +137,7 @@ class aaOceanTexture : public CLxImpl_ValueTexture
         unsigned m_idx_seed;
         unsigned m_idx_repeatTime;
         unsigned m_idx_doFoam;
-        unsigned m_idx_foamMin;
+        unsigned m_idx_foamRange;
         unsigned m_idx_foamMax;
         unsigned m_idx_doNormals;
 		unsigned m_idx_time;

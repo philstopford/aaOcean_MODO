@@ -175,16 +175,16 @@ aaOceanChanMod::cmod_Allocate (
         cm_idx_doFoam = index;
         index++;
 
-        // Lookup the index of the 'foamMin' channel and add as an input.
-        modItem.ChannelLookup ("foamMin", &m_idx_foamMin);
-        chanMod.AddInput (item, m_idx_foamMin);
-        cm_idx_foamMin = index;
-        index++;
-
         // Lookup the index of the 'foamMax' channel and add as an input.
         modItem.ChannelLookup ("foamMax", &m_idx_foamMax);
         chanMod.AddInput (item, m_idx_foamMax);
         cm_idx_foamMax = index;
+        index++;
+
+        // Lookup the index of the 'foamRange' channel and add as an input.
+        modItem.ChannelLookup ("foamRange", &m_idx_foamRange);
+        chanMod.AddInput (item, m_idx_foamRange);
+        cm_idx_foamRange = index;
         index++;
 
         chanMod.AddTime ();
@@ -343,12 +343,12 @@ aaOceanChanMod::cmod_Flags (
                 return LXfCHMOD_INPUT;
         }
 
-        if (LXx_OK (modItem.ChannelLookup ("foamMin", &chanIdx))) {
+        if (LXx_OK (modItem.ChannelLookup ("foamMax", &chanIdx))) {
             if (index == chanIdx)
                 return LXfCHMOD_INPUT;
         }
 
-        if (LXx_OK (modItem.ChannelLookup ("foamMax", &chanIdx))) {
+        if (LXx_OK (modItem.ChannelLookup ("foamRange", &chanIdx))) {
             if (index == chanIdx)
                 return LXfCHMOD_INPUT;
         }
@@ -511,8 +511,8 @@ aaOceanChanMod::cmod_Evaluate (
     chanMod.ReadInputFloat (attr, cm_idx_foamMax, &dTemp);
     newOceanData->foamMax = (float) dTemp;
 
-    chanMod.ReadInputFloat (attr, cm_idx_foamMin, &dTemp);
-    newOceanData->foamMin = (float) dTemp;
+    chanMod.ReadInputFloat (attr, cm_idx_foamRange, &dTemp);
+    newOceanData->foamRange = (float) dTemp;
 
     chanMod.ReadInputFloat (attr, cm_idx_repeatTime, &dTemp);
     newOceanData->m_repeatTime = (float) dTemp;
@@ -596,7 +596,7 @@ void aaOceanChanMod::maybeResetOceanData(std::unique_ptr<OceanData> newOceanData
                            oceanData_->m_repeatTime,
                            oceanData_->m_doFoam,
                            oceanData_->m_doNormals);
-            mOcean_.m_foamBoundmin = oceanData_->foamMin;
+            mOcean_.m_foamBoundrange = oceanData_->foamRange;
             mOcean_.m_foamBoundmax = oceanData_->foamMax;
         }
     }
@@ -698,11 +698,11 @@ aaOceanChanModPackage::pkg_SetupChannels (
         ac.NewChannel  ("doFoam",	LXsTYPE_INTEGER);
         ac.SetDefault  (0.0, 0);
     
-        ac.NewChannel  ("foamMin",	LXsTYPE_FLOAT);
-        ac.SetDefault  (0.0f, 0);
-
         ac.NewChannel  ("foamMax",	LXsTYPE_FLOAT);
-        ac.SetDefault  (1.0f, 0);
+        ac.SetDefault  (1000.0f, 0);
+
+        ac.NewChannel  ("foamRange",	LXsTYPE_FLOAT);
+        ac.SetDefault  (1000.0f, 0);
         // Output channels below, this being defined in Flags and Allocate.
 
         // Note that these vectors end up having three channels (.X, .Y, .Z) elsewhere, leading to checks for displacement.X, etc. Don't get confused.

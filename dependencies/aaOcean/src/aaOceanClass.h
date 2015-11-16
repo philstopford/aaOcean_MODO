@@ -49,24 +49,6 @@ public:
                 float   repeatTime,
                 bool    doFoam,
                 bool    doNormals);
-    void input( int     resolution,
-               unsigned int  seed,
-               float   oceanScale,
-               float   oceanDepth,
-               float   surfaceTension,
-               float   velocity,
-               float   cutoff,
-               float   windDir,
-               int     windAlign,
-               float   damp,
-               float   waveSpeed,
-               float   waveHeight,
-               float   chopAmount,
-               float   time,
-               float   repeatTime,
-               bool    doFoam,
-               float    &foamMin,
-               float    &foamMax);
 
     float getOceanData(float uCoord, float vCoord, aaOcean::arrayType type) const;
     void getOceanArray(float *&outArray, aaOcean::arrayType type);
@@ -96,8 +78,8 @@ public:
     float   m_waveSpeed;
     float   m_time;
     float   m_loopTime;
-    float   m_foamBoundmin; //for holding min/max foam
-    float   m_foamBoundmax; //for holding min/max foam
+    float   m_foamBoundrange; //for holding foam range
+    float   m_foamBoundmax; //for holding max foam
     
     //ocean array pointers
     int     *m_xCoord;

@@ -135,11 +135,11 @@ LxResult aaOceanTexture::vtx_SetupChannels (ILxUnknownID addChan)
 	ac.SetDefault  (0.0, 0);
     ac.SetHint(hint_boolLimit);
 
-    ac.NewChannel  ("foamMin",	LXsTYPE_FLOAT);
-    ac.SetDefault  (0.0f, 0);
+    ac.NewChannel  ("foamRange",	LXsTYPE_FLOAT);
+    ac.SetDefault  (1000.0f, 0);
 
     ac.NewChannel  ("foamMax",	LXsTYPE_FLOAT);
-    ac.SetDefault  (1.0f, 0);
+    ac.SetDefault  (1000.0f, 0);
 
     //ac.NewChannel("div", LXsTYPE_FLOAT);
 	//ac.SetDefault(50.0f, 0);
@@ -172,7 +172,7 @@ LxResult aaOceanTexture::vtx_LinkChannels (ILxUnknownID eval, ILxUnknownID	item)
     m_idx_seed = ev.AddChan(item, "seed");
     m_idx_repeatTime = ev.AddChan(item, "repeatTime");
     m_idx_doFoam = ev.AddChan(item, "doFoam");
-    m_idx_foamMin = ev.AddChan(item, "foamMin");
+    m_idx_foamRange = ev.AddChan(item, "foamRange");
     m_idx_foamMax = ev.AddChan(item, "foamMax");
 	//m_idx_div = ev.AddChan(item, "div");
 
@@ -242,7 +242,7 @@ LxResult aaOceanTexture::vtx_ReadChannels(ILxUnknownID attr, void  **ppvData)
 	newOceanData->m_seed = at.Int(m_idx_seed);
 	newOceanData->m_repeatTime = at.Float(m_idx_repeatTime);
 	newOceanData->m_doFoam = (bool) at.Int(m_idx_doFoam);
-    newOceanData->foamMin = at.Float(m_idx_foamMin);
+    newOceanData->foamRange = at.Float(m_idx_foamRange);
     newOceanData->foamMax = at.Float(m_idx_foamMax);
 	newOceanData->m_doNormals = false; // disabled due to Vector issues (bool) at.Int(m_idx_doNormals);
     
@@ -279,7 +279,7 @@ void aaOceanTexture::maybeResetOceanData(std::unique_ptr<OceanData> newOceanData
                            oceanData_->m_repeatTime,
                            oceanData_->m_doFoam,
                            oceanData_->m_doNormals);
-            mOcean_.m_foamBoundmin = oceanData_->foamMin;
+            mOcean_.m_foamBoundrange = oceanData_->foamRange;
             mOcean_.m_foamBoundmax = oceanData_->foamMax;
         }
     }
@@ -391,6 +391,10 @@ void aaOceanTexture::vtx_Evaluate (ILxUnknownID etor, int *idx, ILxUnknownID vec
         if(oceanData_->m_doFoam == true)
         {
             value = mOcean_.getOceanData(u_oPos, v_oPos, aaOcean::eFOAM);
+            if (tone)
+            {
+                value = 1.0f - value;
+            }
             // value /= oceanData_->m_waveHeight;
         }
     }

@@ -48,8 +48,8 @@ aaOcean::aaOcean() :
     m_waveSpeed(1.0f),
     m_time(1.0f),
     m_loopTime(10000.0f),
-    m_foamBoundmin(-1000.0f),
     m_foamBoundmax(1000.0f),
+    m_foamBoundrange(1000.0f),
 
     // working arrays
     m_xCoord(0),
@@ -932,9 +932,9 @@ float aaOcean::getOceanData(float uCoord, float vCoord, aaOcean::arrayType type)
     if (type == eFOAM)
     {
         float maxValue = m_foamBoundmax;
-        float minValue = m_foamBoundmin;
+        float minValue = maxValue - m_foamBoundrange;
         
-        float range = maxValue - minValue;
+        float range = m_foamBoundrange;
         if (range == 0)
         {
             range = 1.0f;
