@@ -703,6 +703,7 @@ aaOceanChanModPackage::pkg_SetupChannels (
 
         ac.NewChannel  ("foamRange",	LXsTYPE_FLOAT);
         ac.SetDefault  (1000.0f, 0);
+
         // Output channels below, this being defined in Flags and Allocate.
 
         // Note that these vectors end up having three channels (.X, .Y, .Z) elsewhere, leading to checks for displacement.X, etc. Don't get confused.

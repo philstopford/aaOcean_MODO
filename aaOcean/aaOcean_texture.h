@@ -120,7 +120,9 @@ class aaOceanTexture : public CLxImpl_ValueTexture
         LXtItemType		my_type;
 
         bool tone;
+        float divide;
         unsigned m_idx_tone;
+        unsigned m_idx_divide;
         unsigned m_idx_outputType;
 		unsigned m_idx_resolution;
 		unsigned m_idx_oceanSize;
@@ -157,6 +159,8 @@ class aaOceanTexture : public CLxImpl_ValueTexture
         float m_waveChopCache;
         float m_oceanDepthCache;
         float m_seedCache;
+        float m_foamMaxCache;
+        float m_foamRangeCache;
         float m_repeatTimeCache;
         bool m_doFoamCache;
         bool m_doNormalsCache;
