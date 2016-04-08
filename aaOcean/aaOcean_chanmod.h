@@ -64,6 +64,7 @@ class OceanData {
                     this->m_doFoam == oceanData.m_doFoam &&
                     this->m_doNormals == oceanData.m_doNormals &&
                     this->m_time == oceanData.m_time &&
+                    this->m_repeatTime == oceanData.m_repeatTime &&
                     this->foamMax == oceanData.foamMax &&
                     this->foamRange == oceanData.foamRange
                     ); // Check all the other values.
