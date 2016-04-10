@@ -590,7 +590,7 @@ void aaOceanChanMod::maybeResetOceanData(std::unique_ptr<OceanData> newOceanData
                            oceanData_->m_waveAlign,
                            oceanData_->m_waveReflection,
                            oceanData_->m_waveSpeed,
-                           oceanData_->m_waveHeight * 100,
+                           oceanData_->m_waveHeight,
                            oceanData_->m_waveChop,
                            oceanData_->m_time,
                            oceanData_->m_repeatTime,
@@ -699,10 +699,10 @@ aaOceanChanModPackage::pkg_SetupChannels (
         ac.SetDefault  (0.0, 0);
     
         ac.NewChannel  ("foamMax",	LXsTYPE_FLOAT);
-        ac.SetDefault  (1000.0f, 0);
+        ac.SetDefault  (1.0f, 0);
 
         ac.NewChannel  ("foamRange",	LXsTYPE_FLOAT);
-        ac.SetDefault  (1000.0f, 0);
+        ac.SetDefault  (1.0f, 0);
 
         // Output channels below, this being defined in Flags and Allocate.
 
